@@ -981,25 +981,25 @@ with tab_customer_telemetry:
     with col_chart1:
         st.markdown("#### 1. Daily Cluster Active Uptime Hours (CEV vs. ATP)")
         cluster_timeline_data = [
-            {"Date": "08-28", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 9.87},
-            {"Date": "08-29", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 1.25},
-            {"Date": "08-30", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 7.43},
-            {"Date": "08-31", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 9.90},
-            {"Date": "09-01", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 9.27},
-            {"Date": "09-02", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 12.57},
-            {"Date": "09-03", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 11.50},
-            {"Date": "09-03", "Cluster": "atp-eu-west-2", "Uptime (hrs)": 0.50},
-            {"Date": "09-04", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 2.49},
-            {"Date": "09-05", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 10.01},
-            {"Date": "09-05", "Cluster": "atp-eu-west-2", "Uptime (hrs)": 5.60},
-            {"Date": "09-06", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 10.47},
-            {"Date": "09-06", "Cluster": "atp-eu-west-2", "Uptime (hrs)": 21.68},
-            {"Date": "09-07", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 12.00},
-            {"Date": "09-07", "Cluster": "atp-eu-west-2", "Uptime (hrs)": 11.33},
-            {"Date": "09-08", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 14.97},
-            {"Date": "09-08", "Cluster": "atp-eu-west-2", "Uptime (hrs)": 15.32},
-            {"Date": "09-09", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 13.78},
-            {"Date": "09-09", "Cluster": "atp-eu-west-2", "Uptime (hrs)": 7.25},
+            {"Date": "Aug 28, 2026", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 9.87},
+            {"Date": "Aug 29, 2026", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 1.25},
+            {"Date": "Aug 30, 2026", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 7.43},
+            {"Date": "Aug 31, 2026", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 9.90},
+            {"Date": "Sep 01, 2026", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 9.27},
+            {"Date": "Sep 02, 2026", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 12.57},
+            {"Date": "Sep 03, 2026", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 11.50},
+            {"Date": "Sep 03, 2026", "Cluster": "atp-eu-west-2", "Uptime (hrs)": 0.50},
+            {"Date": "Sep 04, 2026", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 2.49},
+            {"Date": "Sep 05, 2026", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 10.01},
+            {"Date": "Sep 05, 2026", "Cluster": "atp-eu-west-2", "Uptime (hrs)": 5.60},
+            {"Date": "Sep 06, 2026", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 10.47},
+            {"Date": "Sep 06, 2026", "Cluster": "atp-eu-west-2", "Uptime (hrs)": 21.68},
+            {"Date": "Sep 07, 2026", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 12.00},
+            {"Date": "Sep 07, 2026", "Cluster": "atp-eu-west-2", "Uptime (hrs)": 11.33},
+            {"Date": "Sep 08, 2026", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 14.97},
+            {"Date": "Sep 08, 2026", "Cluster": "atp-eu-west-2", "Uptime (hrs)": 15.32},
+            {"Date": "Sep 09, 2026", "Cluster": "cev-eu-north-1", "Uptime (hrs)": 13.78},
+            {"Date": "Sep 09, 2026", "Cluster": "atp-eu-west-2", "Uptime (hrs)": 7.25},
         ]
         df_ctime = pd.DataFrame(cluster_timeline_data)
         if PLOTLY_AVAILABLE:
@@ -1015,9 +1015,10 @@ with tab_customer_telemetry:
                 },
                 title="Cluster Active Window: Matches Run ~8 hrs/day (Overnight Off)",
             )
+            fig_ctime.update_xaxes(type="category")
             fig_ctime.update_layout(margin=dict(t=40, b=20, l=10, r=10), legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
             st.plotly_chart(fig_ctime, use_container_width=True)
-        st.caption("📌 **Empirical Finding:** Clusters only run during match hours (~8 hrs/day). Across 312 calendar hours, clusters are completely OFF 70% of the time.")
+        st.caption("📌 **Empirical Finding:** Clusters only run during match hours (~8 hrs/day in 2026). Across 312 calendar hours, clusters are completely OFF 70% of the time.")
 
     with col_chart2:
         st.markdown("#### 2. Node Lifecycles: Ephemeral GPU Pod Scaling")
