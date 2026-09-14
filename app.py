@@ -374,7 +374,7 @@ st.markdown("---")
 tab_exec, tab_gpu, tab_telemetry, tab_commercial = st.tabs([
     "📊 1. Executive Summary & Financial Scorecard",
     "⚡ 2. Technical Architecture & GPU Levers",
-    "⏱️ 3. Live Event Telemetry & Autoscaling Proof",
+    "⏱️ 3. European Tournaments Telemetry & Autoscaling Proof",
     "💡 4. Commercial Models, DWS Flex & Data Lineage",
 ])
 
@@ -505,10 +505,10 @@ with tab_gpu:
 
 
 # ==============================================================================
-# TAB 3: LIVE EVENT TELEMETRY & AUTOSCALING PROOF
+# TAB 3: EUROPEAN TOURNAMENTS TELEMETRY & AUTOSCALING PROOF
 # ==============================================================================
 with tab_telemetry:
-    st.markdown("### ⏱️ Live Event Telemetry & Autoscaling Proof")
+    st.markdown("### ⏱️ European Tournaments Live Telemetry & Autoscaling Proof (CEV & ATP)")
 
     # ROI-First Top Callout
     col_roi1, col_roi2, col_roi3, col_roi4 = st.columns(4)
