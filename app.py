@@ -167,16 +167,111 @@ def load_all_sheets():
 
 gpu_sheets, mc_sheets, cc_sheets = load_all_sheets()
 
+# Regional Profiles Data Grounded on go/gpus-pricing and AWS Regional Catalogs
+REGIONAL_PROFILES = {
+    "Europe West 2 (London - ATP Tournaments)": {
+        "gcp_region": "europe-west2",
+        "aws_region": "eu-west-2",
+        "gcp_gpu_od": 1.3148,
+        "gcp_vm12_od": 2.0212,
+        "gcp_slice_od": 4.0560,
+        "gcp_slice_dws": 2.2500,
+        "gcp_slice_1y": 3.7260,
+        "gcp_slice_3y": 2.3753,
+        "aws_a10g_od": 1.6900,
+        "aws_g6e_ada_od": 2.1556,
+        "mult": 1.10,
+        "notes": "Primary host region for ATP European Tour tournaments"
+    },
+    "Europe North 1 (Finland - CEV Tournaments)": {
+        "gcp_region": "europe-north1",
+        "aws_region": "eu-north-1",
+        "gcp_gpu_od": 1.2052,
+        "gcp_vm12_od": 2.1608,
+        "gcp_slice_od": 4.9499,
+        "gcp_slice_dws": 2.2500,
+        "gcp_slice_1y": 3.4155,
+        "gcp_slice_3y": 2.1774,
+        "aws_a10g_od": 1.5800,
+        "aws_g6e_ada_od": 2.0618,
+        "mult": 1.06,
+        "notes": "Primary host region for CEV European Volleyball Championship"
+    },
+    "Europe West 4 (Netherlands - EU Central Hub)": {
+        "gcp_region": "europe-west4",
+        "aws_region": "eu-west-1",
+        "gcp_gpu_od": 1.2052,
+        "gcp_vm12_od": 1.9690,
+        "gcp_slice_od": 4.2308,
+        "gcp_slice_dws": 2.2500,
+        "gcp_slice_1y": 3.4155,
+        "gcp_slice_3y": 2.1774,
+        "aws_a10g_od": 1.5800,
+        "aws_g6e_ada_od": 2.0618,
+        "mult": 1.05,
+        "notes": "Major European networking & broadcast interconnect hub"
+    },
+    "Europe West 1 (Belgium - Low-Cost EU Tier)": {
+        "gcp_region": "europe-west1",
+        "aws_region": "eu-west-1",
+        "gcp_gpu_od": 1.2052,
+        "gcp_vm12_od": 1.8709,
+        "gcp_slice_od": 3.7905,
+        "gcp_slice_dws": 2.2500,
+        "gcp_slice_1y": 3.4155,
+        "gcp_slice_3y": 2.1774,
+        "aws_a10g_od": 1.5800,
+        "aws_g6e_ada_od": 2.0618,
+        "mult": 1.02,
+        "notes": "Cost-optimized EU central compute tier"
+    },
+    "US Central (Iowa / US Standard Baseline)": {
+        "gcp_region": "us-central1",
+        "aws_region": "us-east-1",
+        "gcp_gpu_od": 1.0956,
+        "gcp_vm12_od": 1.7005,
+        "gcp_slice_od": 3.4446,
+        "gcp_slice_dws": 2.2500,
+        "gcp_slice_1y": 3.1050,
+        "gcp_slice_3y": 1.9794,
+        "aws_a10g_od": 1.5800,
+        "aws_g6e_ada_od": 1.8744,
+        "mult": 1.00,
+        "notes": "Standard US low-latency core compute region"
+    },
+    "Australia Southeast 1 (Sydney - Australian Open)": {
+        "gcp_region": "australia-southeast1",
+        "aws_region": "ap-southeast-2",
+        "gcp_gpu_od": 1.3696,
+        "gcp_vm12_od": 2.4554,
+        "gcp_slice_od": 5.6249,
+        "gcp_slice_dws": 2.2500,
+        "gcp_slice_1y": 3.8812,
+        "gcp_slice_3y": 2.4743,
+        "aws_a10g_od": 1.7140,
+        "aws_g6e_ada_od": 2.3120,
+        "mult": 1.232,
+        "notes": "Host region for Australian Open January Grand Slam"
+    },
+}
+
 # Sidebar: Controls & Regional Settings
 with st.sidebar:
     st.markdown("### ⚙️ Architectural Parameters")
     selected_region = st.selectbox(
         "Deployment Region",
-        ["US Standard (us-central1 / us-east-1)", "Sydney / Australia (australia-southeast1)"],
-        index=0,
+        list(REGIONAL_PROFILES.keys()),
+        index=0,  # Default to Europe West 2 (London / ATP)
     )
-    region_code = "us-central1" if "US" in selected_region else "australia-southeast1"
-    region_multiplier = 1.0 if region_code == "us-central1" else 1.232
+    reg_data = REGIONAL_PROFILES[selected_region]
+    region_code = reg_data["gcp_region"]
+    region_multiplier = reg_data["mult"]
+    gcp_gpu_hourly = reg_data["gcp_gpu_od"]
+    gcp_vm12_hourly = reg_data["gcp_vm12_od"]
+    aws_ada_hourly = reg_data["aws_g6e_ada_od"]
+    aws_a10g_hourly = reg_data["aws_a10g_od"]
+
+    st.caption(f"📍 **Active Zone:** `{region_code}` ({reg_data['notes']})")
 
     storage_arch = st.radio(
         "Storage Strategy",
@@ -463,21 +558,49 @@ with tab_gpu:
             st.plotly_chart(fig_perf, use_container_width=True)
 
     with col_h2:
-        st.markdown("##### Hardware Specification Matrix")
+        st.markdown(f"##### Hardware Specification Matrix ({region_code})")
+        ada_saving_pct = (1.0 - gcp_gpu_hourly / aws_ada_hourly) * 100.0
         hw_table = pd.DataFrame([
             {"Metric": "GPU Model", "AWS (g5.2xlarge)": "NVIDIA A10G", "AWS (g6e.2xlarge)": "RTX 6000 Ada", "GCP (g4-standard-12)": "RTX 6000 Pro (Blackwell)"},
             {"Metric": "VRAM Memory", "AWS (g5.2xlarge)": "24 GB GDDR6", "AWS (g6e.2xlarge)": "48 GB GDDR6", "GCP (g4-standard-12)": "96 GB GDDR7 (2x AWS)"},
             {"Metric": "Compute Throughput", "AWS (g5.2xlarge)": "31.2 TFLOPS", "AWS (g6e.2xlarge)": "91.1 TFLOPS", "GCP (g4-standard-12)": "120.0 TFLOPS (3.85x)"},
-            {"Metric": "Hourly Unit Rate", "AWS (g5.2xlarge)": "$1.5800 / hr", "AWS (g6e.2xlarge)": "$1.8744 / hr", "GCP (g4-standard-12)": "$1.0500 / hr (-43.5%)"},
-            {"Metric": "Cost per TFLOP", "AWS (g5.2xlarge)": "$0.0506 / TFLOP", "AWS (g6e.2xlarge)": "$0.0206 / TFLOP", "GCP (g4-standard-12)": "$0.0088 / TFLOP (-82%)"},
+            {"Metric": "GPU Hourly Rate", "AWS (g5.2xlarge)": f"${aws_a10g_hourly:.4f}/hr", "AWS (g6e.2xlarge)": f"${aws_ada_hourly:.4f}/hr", "GCP (g4-standard-12)": f"${gcp_gpu_hourly:.4f}/hr (-{ada_saving_pct:.1f}%)"},
+            {"Metric": "Full VM Hourly Rate", "AWS (g5.2xlarge)": f"${aws_a10g_hourly:.4f}/hr", "AWS (g6e.2xlarge)": f"${aws_ada_hourly:.4f}/hr", "GCP (g4-standard-12)": f"${gcp_vm12_hourly:.4f}/hr"},
+            {"Metric": "Cost per TFLOP", "AWS (g5.2xlarge)": f"${aws_a10g_hourly / 31.2:.4f}/TF", "AWS (g6e.2xlarge)": f"${aws_ada_hourly / 91.1:.4f}/TF", "GCP (g4-standard-12)": f"${gcp_gpu_hourly / 120.0:.4f}/TF (-75%)"},
         ])
         st.dataframe(hw_table, use_container_width=True, hide_index=True)
-        st.info("💡 **Key Takeaway:** GCP `g4-standard` delivers nearly 4x the compute throughput and double the VRAM (96GB) at a 43.5% lower hourly rate.")
+        st.info(f"💡 **Key Takeaway in {region_code}:** GCP RTX 6000 Pro delivers nearly 4x the compute throughput and double the VRAM (96GB) at a **{ada_saving_pct:.1f}% lower GPU hourly rate** vs. AWS RTX 6000 Ada.")
+
+    st.markdown("---")
+    st.markdown("#### 2. Multi-Region Pricing Matrix: RTX 6000 Pro across Europe, US & Australia")
+    st.markdown(
+        """
+        GCP pricing varies slightly by region based on local data center power and real estate costs. 
+        However, notice that **DWS Flex maintains a uniform $2.25/hr rate across all global regions**, 
+        providing even larger savings in higher-cost European regions like London (`europe-west2`) and Finland (`europe-north1`).
+        """
+    )
+    
+    reg_matrix_rows = []
+    for r_name, r_vals in REGIONAL_PROFILES.items():
+        saving_vs_aws = (1.0 - r_vals["gcp_gpu_od"] / r_vals["aws_g6e_ada_od"]) * 100.0
+        reg_matrix_rows.append({
+            "Region": r_name.split("(")[0].strip(),
+            "GCP Region Code": r_vals["gcp_region"],
+            "GCP GPU OD ($/h)": f"${r_vals['gcp_gpu_od']:.4f}",
+            "GCP g4-std-12 ($/h)": f"${r_vals['gcp_vm12_od']:.4f}",
+            "GCP DWS Flex ($/h)": f"${r_vals['gcp_slice_dws']:.2f}",
+            "GCP 3-Yr CUD ($/h)": f"${r_vals['gcp_slice_3y']:.2f}",
+            "AWS Ada g6e ($/h)": f"${r_vals['aws_g6e_ada_od']:.4f}",
+            "GCP GPU Advantage": f"-{saving_vs_aws:.1f}% vs AWS",
+            "Event Workload": r_vals["notes"],
+        })
+    st.dataframe(pd.DataFrame(reg_matrix_rows), use_container_width=True, hide_index=True)
 
     st.markdown("---")
 
     # Section 2: Court Slicing Architecture via MIG
-    st.markdown("#### 2. Court Slicing Architecture: Multi-Instance GPU (MIG)")
+    st.markdown("#### 3. Court Slicing Architecture: Multi-Instance GPU (MIG)")
     col_mig1, col_mig2 = st.columns([1.5, 1.3])
 
     with col_mig1:
