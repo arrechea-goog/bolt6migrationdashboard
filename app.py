@@ -168,78 +168,76 @@ def load_all_sheets():
 gpu_sheets, mc_sheets, cc_sheets = load_all_sheets()
 
 # Regional Profiles Data Grounded on go/gpus-pricing and AWS Regional Catalogs
+REGIONAL_BREAKDOWN = [
+    {
+        "Tournament Region": "Australia (Sydney)",
+        "GCP Zone": "australia-southeast1",
+        "AWS Zone": "ap-southeast-2",
+        "Fleet Share": 0.470,
+        "Events / Workloads": "Australian Open (Jan Grand Slam), APAC Summer Tournaments",
+        "AWS Compute ($)": 370242.0,
+        "GCP Compute ($)": 206758.0,
+        "Net Compute Savings ($)": 163485.0,
+        "Reduction (%)": 44.2,
+        "Key GCP Levers": "Eliminates $110.5k reservation fee via MIG court slicing (4 courts / GPU)",
+    },
+    {
+        "Tournament Region": "United States",
+        "GCP Zone": "us-central1 / us-east4",
+        "AWS Zone": "us-east-1 / us-east-2",
+        "Fleet Share": 0.233,
+        "Events / Workloads": "US Tournaments, Core Off-Peak AI/ML Training Pipeline",
+        "AWS Compute ($)": 183546.0,
+        "GCP Compute ($)": 83197.0,
+        "Net Compute Savings ($)": 100349.0,
+        "Reduction (%)": 54.7,
+        "Key GCP Levers": "RTX 6000 Pro 96GB at $1.0956/hr (-43% vs Ada) + GKE off-hours scale-down",
+    },
+    {
+        "Tournament Region": "Europe (London & Nordics)",
+        "GCP Zone": "europe-west2 / europe-north1",
+        "AWS Zone": "eu-west-2 / eu-north-1",
+        "Fleet Share": 0.177,
+        "Events / Workloads": "ATP European Tour, Queen's Club, CEV Volleyball",
+        "AWS Compute ($)": 139432.0,
+        "GCP Compute ($)": 68258.0,
+        "Net Compute Savings ($)": 71174.0,
+        "Reduction (%)": 51.0,
+        "Key GCP Levers": "DWS Flex uniform $2.25/hr + GKE Autopilot match-window autoscaling (70% idle off)",
+    },
+    {
+        "Tournament Region": "Rest of World (APAC/LatAm/ME)",
+        "GCP Zone": "asia-southeast1 / me-central1",
+        "AWS Zone": "ap-southeast-1 / sa-east-1",
+        "Fleet Share": 0.120,
+        "Events / Workloads": "Challenger Tournaments, Regional Broadcast Feeds",
+        "AWS Compute ($)": 94530.0,
+        "GCP Compute ($)": 47133.0,
+        "Net Compute Savings ($)": 47397.0,
+        "Reduction (%)": 50.1,
+        "Key GCP Levers": "On-demand ephemeral nodes provisioned dynamically during tournament weeks",
+    },
+]
+
 REGIONAL_PROFILES = {
-    "Europe West 2 (London - ATP Tournaments)": {
-        "gcp_region": "europe-west2",
-        "aws_region": "eu-west-2",
-        "gcp_gpu_od": 1.3148,
-        "gcp_vm12_od": 2.0212,
-        "gcp_slice_od": 4.0560,
+    "🌍 Global Multi-Region Fleet (Exact AWS Blend: 47% Sydney, 23% US, 18% Europe, 12% Other)": {
+        "is_global": True,
+        "gcp_region": "Global Multi-Region (1:1 AWS Footprint)",
+        "aws_region": "Global Multi-Region",
+        "gcp_gpu_od": 1.2580,  # weighted average
+        "gcp_vm12_od": 2.0530,
+        "gcp_slice_od": 4.1950,
         "gcp_slice_dws": 2.2500,
-        "gcp_slice_1y": 3.7260,
-        "gcp_slice_3y": 2.3753,
-        "aws_a10g_od": 1.6900,
-        "aws_g6e_ada_od": 2.1556,
-        "mult": 1.10,
-        "notes": "Primary host region for ATP European Tour tournaments"
+        "gcp_slice_1y": 3.4920,
+        "gcp_slice_3y": 2.2470,
+        "aws_a10g_od": 1.6660,
+        "aws_g6e_ada_od": 2.1640,
+        "mult": 1.1352,
+        "notes": "Exact 1:1 geographic match of Bolt6's actual global tournament fleet across 4 regions",
+        "compute_annual": 405346.0,
     },
-    "Europe North 1 (Finland - CEV Tournaments)": {
-        "gcp_region": "europe-north1",
-        "aws_region": "eu-north-1",
-        "gcp_gpu_od": 1.2052,
-        "gcp_vm12_od": 2.1608,
-        "gcp_slice_od": 4.9499,
-        "gcp_slice_dws": 2.2500,
-        "gcp_slice_1y": 3.4155,
-        "gcp_slice_3y": 2.1774,
-        "aws_a10g_od": 1.5800,
-        "aws_g6e_ada_od": 2.0618,
-        "mult": 1.06,
-        "notes": "Primary host region for CEV European Volleyball Championship"
-    },
-    "Europe West 4 (Netherlands - EU Central Hub)": {
-        "gcp_region": "europe-west4",
-        "aws_region": "eu-west-1",
-        "gcp_gpu_od": 1.2052,
-        "gcp_vm12_od": 1.9690,
-        "gcp_slice_od": 4.2308,
-        "gcp_slice_dws": 2.2500,
-        "gcp_slice_1y": 3.4155,
-        "gcp_slice_3y": 2.1774,
-        "aws_a10g_od": 1.5800,
-        "aws_g6e_ada_od": 2.0618,
-        "mult": 1.05,
-        "notes": "Major European networking & broadcast interconnect hub"
-    },
-    "Europe West 1 (Belgium - Low-Cost EU Tier)": {
-        "gcp_region": "europe-west1",
-        "aws_region": "eu-west-1",
-        "gcp_gpu_od": 1.2052,
-        "gcp_vm12_od": 1.8709,
-        "gcp_slice_od": 3.7905,
-        "gcp_slice_dws": 2.2500,
-        "gcp_slice_1y": 3.4155,
-        "gcp_slice_3y": 2.1774,
-        "aws_a10g_od": 1.5800,
-        "aws_g6e_ada_od": 2.0618,
-        "mult": 1.02,
-        "notes": "Cost-optimized EU central compute tier"
-    },
-    "US Central (Iowa / US Standard Baseline)": {
-        "gcp_region": "us-central1",
-        "aws_region": "us-east-1",
-        "gcp_gpu_od": 1.0956,
-        "gcp_vm12_od": 1.7005,
-        "gcp_slice_od": 3.4446,
-        "gcp_slice_dws": 2.2500,
-        "gcp_slice_1y": 3.1050,
-        "gcp_slice_3y": 1.9794,
-        "aws_a10g_od": 1.5800,
-        "aws_g6e_ada_od": 1.8744,
-        "mult": 1.00,
-        "notes": "Standard US low-latency core compute region"
-    },
-    "Australia Southeast 1 (Sydney - Australian Open)": {
+    "Australia Southeast 1 (Sydney - 47% Fleet Share / Australian Open)": {
+        "is_global": False,
         "gcp_region": "australia-southeast1",
         "aws_region": "ap-southeast-2",
         "gcp_gpu_od": 1.3696,
@@ -251,7 +249,88 @@ REGIONAL_PROFILES = {
         "aws_a10g_od": 1.7140,
         "aws_g6e_ada_od": 2.3120,
         "mult": 1.232,
-        "notes": "Host region for Australian Open January Grand Slam"
+        "notes": "Host region for Australian Open January Grand Slam (47.0% of historical compute)",
+        "compute_annual": 357070.0 * 1.232,
+    },
+    "US Central (Iowa / US Standard - 23% Fleet Share)": {
+        "is_global": False,
+        "gcp_region": "us-central1",
+        "aws_region": "us-east-1",
+        "gcp_gpu_od": 1.0956,
+        "gcp_vm12_od": 1.7005,
+        "gcp_slice_od": 3.4446,
+        "gcp_slice_dws": 2.2500,
+        "gcp_slice_1y": 3.1050,
+        "gcp_slice_3y": 1.9794,
+        "aws_a10g_od": 1.5800,
+        "aws_g6e_ada_od": 1.8744,
+        "mult": 1.000,
+        "notes": "Core US low-latency tournament hub & ML training pipeline (23.3% of historical compute)",
+        "compute_annual": 357070.0 * 1.000,
+    },
+    "Europe West 2 (London - 14% Fleet Share / ATP Tour)": {
+        "is_global": False,
+        "gcp_region": "europe-west2",
+        "aws_region": "eu-west-2",
+        "gcp_gpu_od": 1.3148,
+        "gcp_vm12_od": 2.0212,
+        "gcp_slice_od": 4.0560,
+        "gcp_slice_dws": 2.2500,
+        "gcp_slice_1y": 3.7260,
+        "gcp_slice_3y": 2.3753,
+        "aws_a10g_od": 1.6900,
+        "aws_g6e_ada_od": 2.1556,
+        "mult": 1.100,
+        "notes": "Primary host region for ATP European Tour tournaments (14.1% of historical compute)",
+        "compute_annual": 357070.0 * 1.100,
+    },
+    "Europe North 1 (Finland - 4% Fleet Share / CEV Volleyball)": {
+        "is_global": False,
+        "gcp_region": "europe-north1",
+        "aws_region": "eu-north-1",
+        "gcp_gpu_od": 1.2052,
+        "gcp_vm12_od": 2.1608,
+        "gcp_slice_od": 4.9499,
+        "gcp_slice_dws": 2.2500,
+        "gcp_slice_1y": 3.4155,
+        "gcp_slice_3y": 2.1774,
+        "aws_a10g_od": 1.5800,
+        "aws_g6e_ada_od": 2.0618,
+        "mult": 1.060,
+        "notes": "Primary host region for CEV European Volleyball Championship (3.6% of historical compute)",
+        "compute_annual": 357070.0 * 1.060,
+    },
+    "Europe West 4 (Netherlands - EU Central Broadcast Hub)": {
+        "is_global": False,
+        "gcp_region": "europe-west4",
+        "aws_region": "eu-west-1",
+        "gcp_gpu_od": 1.2052,
+        "gcp_vm12_od": 1.9690,
+        "gcp_slice_od": 4.2308,
+        "gcp_slice_dws": 2.2500,
+        "gcp_slice_1y": 3.4155,
+        "gcp_slice_3y": 2.1774,
+        "aws_a10g_od": 1.5800,
+        "aws_g6e_ada_od": 2.0618,
+        "mult": 1.050,
+        "notes": "Major European networking & broadcast interconnect hub",
+        "compute_annual": 357070.0 * 1.050,
+    },
+    "Europe West 1 (Belgium - Low-Cost EU Tier)": {
+        "is_global": False,
+        "gcp_region": "europe-west1",
+        "aws_region": "eu-west-1",
+        "gcp_gpu_od": 1.2052,
+        "gcp_vm12_od": 1.8709,
+        "gcp_slice_od": 3.7905,
+        "gcp_slice_dws": 2.2500,
+        "gcp_slice_1y": 3.4155,
+        "gcp_slice_3y": 2.1774,
+        "aws_a10g_od": 1.5800,
+        "aws_g6e_ada_od": 2.0618,
+        "mult": 1.020,
+        "notes": "Cost-optimized EU central compute tier",
+        "compute_annual": 357070.0 * 1.020,
     },
 }
 
@@ -261,7 +340,7 @@ with st.sidebar:
     selected_region = st.selectbox(
         "Deployment Region",
         list(REGIONAL_PROFILES.keys()),
-        index=0,  # Default to Europe West 2 (London / ATP)
+        index=0,  # Default to Global Multi-Region Fleet (Exact AWS Footprint)
     )
     reg_data = REGIONAL_PROFILES[selected_region]
     region_code = reg_data["gcp_region"]
@@ -282,40 +361,25 @@ with st.sidebar:
     st.markdown("---")
     st.caption("All figures in USD ($). Grounded on verified customer telemetry and Google internal pricing models.")
 
-# Optimization Levers (Enabled by Default in Production Architecture)
-use_g4_rtx_mapping = True
-enable_mig_partitioning = True
-enable_gpu_autoscaling = True
-
 # Base Calculations
-scenarios = cc_sheets["Scenario_Comparison"]
-aws_status_quo = scenarios.loc[scenarios["Scenario ID"] == "S1", "Annual Total ($)"].values[0]
-aws_1b_optimized = scenarios.loc[scenarios["Scenario ID"] == "S2", "Annual Total ($)"].values[0]
-gcp_prelim_baseline = scenarios.loc[scenarios["Scenario ID"] == "S3", "Annual Total ($)"].values[0]
+aws_status_quo = 1190750.0  # Scenario S1 ($787,750 compute + $277k storage + $126k egress)
+aws_1b_optimized = 912466.0  # Scenario S2 ($635,466 compute + $277k storage + $0 egress)
+gcp_prelim_baseline = 888842.0  # Scenario S3 ($485,842 compute + $277k storage + $126k egress)
 
 aws_1b_savings_vs_asis = aws_status_quo - aws_1b_optimized  # $278,284
 gcp_prelim_savings_vs_asis = aws_status_quo - gcp_prelim_baseline  # $301,908
 
-# Value Levers
-gpu_sku_optimization_saving = 148604.0 * (1.0 if region_code == "us-central1" else 1.15)
-aus_open_mig_saving = 110532.0
-gpu_autoscaling_saving = 135000.0
-
-active_savings_boost = 0.0
-if use_g4_rtx_mapping:
-    active_savings_boost += gpu_sku_optimization_saving
-if enable_mig_partitioning:
-    active_savings_boost += aus_open_mig_saving
-if enable_gpu_autoscaling:
-    active_savings_boost += gpu_autoscaling_saving
+# Value Levers & Active Architecture
+gcp_compute_annual = reg_data["compute_annual"]
 
 if "Native GCS" in storage_arch:
-    storage_savings = 263000.0  # $137k storage delta + $126k egress avoided
-    gcp_active_annual = 497070.0 * (1.0 if region_code == "us-central1" else region_multiplier * 0.9)
+    gcp_storage_annual = 140000.0
+    gcp_egress_annual = 0.0
 else:
-    storage_savings = 0.0
-    gcp_active_annual = (gcp_prelim_baseline - active_savings_boost)
+    gcp_storage_annual = 277000.0
+    gcp_egress_annual = 126000.0
 
+gcp_active_annual = gcp_compute_annual + gcp_storage_annual + gcp_egress_annual
 total_net_savings = aws_status_quo - gcp_active_annual
 pct_savings = (total_net_savings / aws_status_quo) * 100.0
 
@@ -356,7 +420,7 @@ with col_kpi1:
     )
 with col_kpi2:
     st.metric(
-        label=f"Refined GCP Architecture ({region_code})",
+        label=f"Refined GCP Architecture ({'Global Multi-Region' if reg_data['is_global'] else region_code})",
         value=f"${gcp_active_annual:,.0f} / yr",
         delta=f"-${total_net_savings:,.0f} / yr Net Delta",
         delta_color="normal",
@@ -375,7 +439,7 @@ col_bar, col_bullets = st.columns([1.5, 1.2])
 with col_bar:
     summary_bars = pd.DataFrame([
         {"Architecture": "AWS As-Is Status Quo", "Annual Spend ($)": aws_status_quo, "Category": "AWS As-Is"},
-        {"Architecture": f"GCP Refined Production ({region_code})", "Annual Spend ($)": gcp_active_annual, "Category": "GCP Refined"},
+        {"Architecture": f"GCP Refined Production ({'Global Multi-Region' if reg_data['is_global'] else region_code})", "Annual Spend ($)": gcp_active_annual, "Category": "GCP Refined"},
     ])
     if PLOTLY_AVAILABLE:
         fig_scorecard = px.bar(
@@ -403,9 +467,9 @@ with col_bullets:
                 🎯 Executive Summary & Core Advantages
             </div>
             <div style="font-size: 13px; color: #3c4043; line-height: 1.5;">
-                • <strong>${total_net_savings:,.0f}/year savings ({pct_savings:.1f}% cut)</strong> by moving from AWS to modern GCP infrastructure.<br/>
-                • <strong>Nearly 4x GPU Compute at Half the Price:</strong> NVIDIA RTX 6000 Pro delivers 120 TFLOPS & 96GB VRAM at 43% lower hourly rate.<br/>
-                • <strong>MIG Court Slicing & Autoscaling:</strong> 1 physical GPU runs 4 courts; nodes scale to zero outside live match windows.
+                • <strong>${total_net_savings:,.0f}/year savings ({pct_savings:.1f}% cut)</strong> across Bolt6's identical global tournament footprint.<br/>
+                • <strong>1:1 Regional Mapping:</strong> Matches Bolt6's AWS distribution (47% Sydney, 23% US, 18% Europe, 12% Other) with localized Blackwell RTX 6000 Pro pricing.<br/>
+                • <strong>MIG Court Slicing & Autoscaling:</strong> 1 physical GPU runs 4 courts; nodes scale to zero outside live tournament windows.
             </div>
         </div>
         """,
@@ -444,9 +508,13 @@ with st.expander("📊 View Detailed Financial Breakdown & 36-Month Scenario Mat
             st.plotly_chart(fig_wf, use_container_width=True)
 
     with col_mat:
-        matrix_df = scenarios.copy()
+        matrix_df = pd.DataFrame([
+            {"Scenario ID": "S1", "Scenario Name": "1. AWS As-Is Baseline (Status Quo)", "Compute Cost ($)": 787750.0, "Storage Cost ($)": 277000.0, "Cross-Cloud Egress ($)": 126000.0, "Annual Total ($)": 1190750.0},
+            {"Scenario ID": "S2", "Scenario Name": "1B. AWS Structurally Optimized", "Compute Cost ($)": 635466.0, "Storage Cost ($)": 277000.0, "Cross-Cloud Egress ($)": 0.0, "Annual Total ($)": 912466.0},
+            {"Scenario ID": "S3", "Scenario Name": "2. GCP Baseline (Dual-Cloud S3)", "Compute Cost ($)": 485842.0, "Storage Cost ($)": 277000.0, "Cross-Cloud Egress ($)": 126000.0, "Annual Total ($)": 888842.0},
+            {"Scenario ID": "S4", "Scenario Name": f"4. GCP Refined Production ({'Global Multi-Region' if reg_data['is_global'] else region_code})", "Compute Cost ($)": gcp_compute_annual, "Storage Cost ($)": gcp_storage_annual, "Cross-Cloud Egress ($)": gcp_egress_annual, "Annual Total ($)": gcp_active_annual},
+        ])
         matrix_df["36-Mo Total ($)"] = matrix_df["Annual Total ($)"] * 3
-        matrix_df.loc[matrix_df["Scenario ID"] == "S4", "36-Mo Total ($)"] = gcp_active_annual * 3
         matrix_df["36-Mo Net Savings ($)"] = (aws_status_quo * 3) - matrix_df["36-Mo Total ($)"]
         disp_mat = matrix_df[["Scenario Name", "Compute Cost ($)", "Storage Cost ($)", "Cross-Cloud Egress ($)", "Annual Total ($)", "36-Mo Net Savings ($)"]]
         st.dataframe(
@@ -505,7 +573,7 @@ with tab_exec:
                 color="Provider",
                 text_auto="$.3s",
                 color_discrete_map={"AWS": "#EA4335", "GCP": "#34A853"},
-                title=f"Annual Run-Rate across Scenarios ({region_code})",
+                title=f"Annual Run-Rate across Scenarios ({'Global Multi-Region' if reg_data['is_global'] else region_code})",
             )
             fig_sbar.update_layout(margin=dict(t=40, b=20, l=10, r=10), showlegend=False)
             fig_sbar = add_chart_logos(fig_sbar, show_aws=True, show_gcp=True)
@@ -523,6 +591,63 @@ with tab_exec:
         st.success(
             f"💰 **Net Storage & Egress Advantage:** **+$263,000 / year saved** by eliminating cross-cloud egress and using GCS intelligent tiering."
         )
+
+    # 1:1 Regional Footprint & Multi-Region Compute Distribution
+    st.markdown("---")
+    st.markdown("### 🌐 1:1 Regional Footprint & Multi-Region Compute Distribution (AWS vs. GCP)")
+    st.markdown(
+        """
+        Bolt6's AWS As-Is baseline (**$1,190,750/year**, with **$787,750 compute**) represents tournament operations distributed across **4 key global regions**. 
+        To deliver a 1:1 fair comparison, the **GCP Refined Production model calculates cost across that exact same regional combination**, 
+        applying local regional GPU pricing (`australia-southeast1`, `us-central1`, `europe-west2`, `asia-southeast1`) and specific architectural optimizations in each geography.
+        """
+    )
+
+    col_reg_table, col_reg_chart = st.columns([1.5, 1.3])
+
+    with col_reg_table:
+        st.markdown("##### Regional Compute Breakdown: AWS Status Quo vs. GCP Refined")
+        regional_display_df = pd.DataFrame([
+            {
+                "Region / Tournament Hub": r["Tournament Region"],
+                "Fleet Share": f"{r['Fleet Share']*100:.1f}%",
+                "AWS Compute": f"${r['AWS Compute ($)']:,.0f}",
+                "GCP Compute": f"${r['GCP Compute ($)']:,.0f}",
+                "Annual Savings": f"${r['Net Compute Savings ($)']:,.0f}",
+                "Cut": f"-{r['Reduction (%)']:.1f}%",
+                "Key Regional GCP Lever": r["Key GCP Levers"],
+            }
+            for r in REGIONAL_BREAKDOWN
+        ])
+        st.dataframe(regional_display_df, use_container_width=True, hide_index=True)
+
+        st.info(
+            "💡 **Australian Open & Sydney Impact:** Over 47% of Bolt6's annual compute spend is concentrated in Sydney (`ap-southeast-2`). "
+            "On AWS, Bolt6 paid a $110,532 capacity fee for the January Grand Slam. "
+            "On GCP, MIG court slicing (4 courts per physical RTX 6000 Pro) combined with GKE dynamic scaling saves **$163,485/year (-44.2%)** in Sydney alone."
+        )
+
+    with col_reg_chart:
+        reg_chart_data = []
+        for r in REGIONAL_BREAKDOWN:
+            reg_chart_data.append({"Region": r["Tournament Region"].split("(")[0].strip(), "Provider": "AWS Compute", "Spend ($)": r["AWS Compute ($)"]})
+            reg_chart_data.append({"Region": r["Tournament Region"].split("(")[0].strip(), "Provider": "GCP Refined Compute", "Spend ($)": r["GCP Compute ($)"]})
+        df_reg_chart = pd.DataFrame(reg_chart_data)
+
+        if PLOTLY_AVAILABLE:
+            fig_reg = px.bar(
+                df_reg_chart,
+                x="Region",
+                y="Spend ($)",
+                color="Provider",
+                barmode="group",
+                text_auto="$.2s",
+                color_discrete_map={"AWS Compute": "#EA4335", "GCP Refined Compute": "#34A853"},
+                title="Annual Compute Spend by Region: AWS vs. GCP",
+            )
+            fig_reg.update_layout(margin=dict(t=40, b=20, l=10, r=10), legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1), height=280)
+            fig_reg = add_chart_logos(fig_reg, show_aws=True, show_gcp=True)
+            st.plotly_chart(fig_reg, use_container_width=True)
 
 
 # ==============================================================================
@@ -558,7 +683,7 @@ with tab_gpu:
             st.plotly_chart(fig_perf, use_container_width=True)
 
     with col_h2:
-        st.markdown(f"##### Hardware Specification Matrix ({region_code})")
+        st.markdown(f"##### Hardware Specification Matrix ({'Global Multi-Region Blend' if reg_data['is_global'] else region_code})")
         ada_saving_pct = (1.0 - gcp_gpu_hourly / aws_ada_hourly) * 100.0
         hw_table = pd.DataFrame([
             {"Metric": "GPU Model", "AWS (g5.2xlarge)": "NVIDIA A10G", "AWS (g6e.2xlarge)": "RTX 6000 Ada", "GCP (g4-standard-12)": "RTX 6000 Pro (Blackwell)"},
@@ -569,7 +694,7 @@ with tab_gpu:
             {"Metric": "Cost per TFLOP", "AWS (g5.2xlarge)": f"${aws_a10g_hourly / 31.2:.4f}/TF", "AWS (g6e.2xlarge)": f"${aws_ada_hourly / 91.1:.4f}/TF", "GCP (g4-standard-12)": f"${gcp_gpu_hourly / 120.0:.4f}/TF (-75%)"},
         ])
         st.dataframe(hw_table, use_container_width=True, hide_index=True)
-        st.info(f"💡 **Key Takeaway in {region_code}:** GCP RTX 6000 Pro delivers nearly 4x the compute throughput and double the VRAM (96GB) at a **{ada_saving_pct:.1f}% lower GPU hourly rate** vs. AWS RTX 6000 Ada.")
+        st.info(f"💡 **Key Takeaway in {'Global Multi-Region' if reg_data['is_global'] else region_code}:** GCP RTX 6000 Pro delivers nearly 4x the compute throughput and double the VRAM (96GB) at a **{ada_saving_pct:.1f}% lower GPU hourly rate** vs. AWS RTX 6000 Ada.")
 
     st.markdown("---")
     st.markdown("#### 2. Multi-Region Pricing Matrix: RTX 6000 Pro across Europe, US & Australia")
@@ -583,6 +708,8 @@ with tab_gpu:
     
     reg_matrix_rows = []
     for r_name, r_vals in REGIONAL_PROFILES.items():
+        if r_vals.get("is_global", False):
+            continue
         saving_vs_aws = (1.0 - r_vals["gcp_gpu_od"] / r_vals["aws_g6e_ada_od"]) * 100.0
         reg_matrix_rows.append({
             "Region": r_name.split("(")[0].strip(),
@@ -596,6 +723,17 @@ with tab_gpu:
             "Event Workload": r_vals["notes"],
         })
     st.dataframe(pd.DataFrame(reg_matrix_rows), use_container_width=True, hide_index=True)
+
+    st.markdown(
+        """
+        <div style="background-color: #e8f0fe; border-left: 4px solid #1a73e8; padding: 12px 16px; border-radius: 6px; margin-top: 10px;">
+            <strong style="color: #1a73e8;">🌐 Global Multi-Region Fleet Summary:</strong>
+            Bolt6's global operations across Sydney (47%), US (23.3%), Europe (17.7%), and Rest of World (12%) yield an effective global blended multiplier of <strong>1.1352x</strong> vs. pure US baseline. 
+            This translates to a total refined GCP compute spend of <strong>$405,346/yr</strong> (down from $787,750/yr on AWS) — saving <strong>$382,404/yr (-48.5%) on compute alone</strong> while honoring local regional deployments.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown("---")
 
