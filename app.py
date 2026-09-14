@@ -170,16 +170,16 @@ gpu_sheets, mc_sheets, cc_sheets = load_all_sheets()
 # Regional Profiles Data Grounded on go/gpus-pricing and AWS Regional Catalogs
 REGIONAL_BREAKDOWN = [
     {
-        "Tournament Region": "Australia (Sydney)",
-        "GCP Zone": "australia-southeast1",
+        "Tournament Region": "Australia (Melbourne)",
+        "GCP Zone": "australia-southeast2",
         "AWS Zone": "ap-southeast-2",
         "Fleet Share": 0.470,
-        "Events / Workloads": "Australian Open (Jan Grand Slam), APAC Summer Tournaments",
+        "Events / Workloads": "Australian Open (Jan Grand Slam at Melbourne Park), APAC Tournaments",
         "AWS Compute ($)": 370242.0,
         "GCP Compute ($)": 206758.0,
         "Net Compute Savings ($)": 163485.0,
         "Reduction (%)": 44.2,
-        "Key GCP Levers": "Eliminates $110.5k reservation fee via MIG court slicing (4 courts / GPU)",
+        "Key GCP Levers": "Eliminates $110.5k reservation fee via MIG court slicing (4 courts / GPU) + in-city Melbourne deployment",
     },
     {
         "Tournament Region": "United States",
@@ -221,8 +221,8 @@ REGIONAL_BREAKDOWN = [
 
 # Regional Catalog Data Grounded on go/gpus-pricing and AWS Regional Catalogs
 REGIONAL_CATALOG = {
-    "Australia Southeast 1 (Sydney)": {
-        "gcp_region": "australia-southeast1",
+    "Australia Southeast 2 (Melbourne)": {
+        "gcp_region": "australia-southeast2",
         "aws_region": "ap-southeast-2",
         "gcp_gpu_od": 1.3696,
         "gcp_vm12_od": 2.4554,
@@ -233,7 +233,7 @@ REGIONAL_CATALOG = {
         "aws_a10g_od": 1.7140,
         "aws_g6e_ada_od": 2.3120,
         "mult": 1.232,
-        "notes": "Host region for Australian Open January Grand Slam (47.0% fleet share)",
+        "notes": "Host region for Australian Open in Melbourne (47.0% fleet share, ultra-low in-city latency)",
     },
     "US Central (Iowa / US East Baseline)": {
         "gcp_region": "us-central1",
@@ -328,13 +328,13 @@ with st.sidebar:
                 🌐 Regional Footprint (1:1 AWS Match)
             </div>
             <div style="font-size: 12px; color: #3c4043; line-height: 1.45;">
-                • <strong>47.0%</strong> Sydney (<code>australia-southeast1</code>)<br/>
+                • <strong>47.0%</strong> Melbourne (<code>australia-southeast2</code>)<br/>
                 • <strong>23.3%</strong> US Central/East (<code>us-central1</code>)<br/>
                 • <strong>17.7%</strong> Europe (<code>europe-west2 / north1</code>)<br/>
                 • <strong>12.0%</strong> Rest of World (<code>asia-southeast1</code>)
             </div>
             <div style="font-size: 11px; color: #5f6368; margin-top: 6px; border-top: 1px solid #e0e0e0; pt: 4px;">
-                Grounded on Bolt6's actual tournament telemetry.
+                Grounded on Bolt6's actual tournament telemetry (Australian Open in Melbourne).
             </div>
         </div>
         """,
@@ -461,7 +461,7 @@ with col_bullets:
             </div>
             <div style="font-size: 13px; color: #3c4043; line-height: 1.5;">
                 • <strong>${total_net_savings:,.0f}/year savings ({pct_savings:.1f}% cut)</strong> across Bolt6's identical global tournament footprint.<br/>
-                • <strong>1:1 Regional Mapping:</strong> Matches Bolt6's AWS distribution (47% Sydney, 23% US, 18% Europe, 12% Other) with localized Blackwell RTX 6000 Pro pricing.<br/>
+                • <strong>1:1 Regional Mapping:</strong> Matches Bolt6's AWS distribution (47% Melbourne / Australian Open, 23% US, 18% Europe, 12% Other) with localized Blackwell RTX 6000 Pro pricing.<br/>
                 • <strong>MIG Court Slicing & Autoscaling:</strong> 1 physical GPU runs 4 courts; nodes scale to zero outside live tournament windows.
             </div>
         </div>
@@ -592,7 +592,7 @@ with tab_exec:
         """
         Bolt6's AWS As-Is baseline (**$1,190,750/year**, with **$787,750 compute**) represents tournament operations distributed across **4 key global regions**. 
         To deliver a 1:1 fair comparison, the **GCP Refined Production model calculates cost across that exact same regional combination**, 
-        applying local regional GPU pricing (`australia-southeast1`, `us-central1`, `europe-west2`, `asia-southeast1`) and specific architectural optimizations in each geography.
+        applying local regional GPU pricing (`australia-southeast2`, `us-central1`, `europe-west2`, `asia-southeast1`) and specific architectural optimizations in each geography.
         """
     )
 
@@ -615,9 +615,9 @@ with tab_exec:
         st.dataframe(regional_display_df, use_container_width=True, hide_index=True)
 
         st.info(
-            "💡 **Australian Open & Sydney Impact:** Over 47% of Bolt6's annual compute spend is concentrated in Sydney (`ap-southeast-2`). "
-            "On AWS, Bolt6 paid a $110,532 capacity fee for the January Grand Slam. "
-            "On GCP, MIG court slicing (4 courts per physical RTX 6000 Pro) combined with GKE dynamic scaling saves **$163,485/year (-44.2%)** in Sydney alone."
+            "💡 **Australian Open & Melbourne Impact:** Over 47% of Bolt6's annual compute spend is concentrated in Australia for the January Grand Slam. "
+            "On AWS, Bolt6 was forced to route camera feeds to Sydney (`ap-southeast-2`) and paid a $110,532 capacity reservation fee. "
+            "On GCP, deploying directly in Melbourne (`australia-southeast2`) provides ultra-low in-city latency to Melbourne Park, while MIG court slicing (4 courts per physical RTX 6000 Pro) combined with GKE dynamic scaling saves **$163,485/year (-44.2%)** in Australia alone."
         )
 
     with col_reg_chart:
@@ -719,7 +719,7 @@ with tab_gpu:
         """
         <div style="background-color: #e8f0fe; border-left: 4px solid #1a73e8; padding: 12px 16px; border-radius: 6px; margin-top: 10px;">
             <strong style="color: #1a73e8;">🌐 Global Multi-Region Fleet Summary:</strong>
-            Bolt6's global operations across Sydney (47%), US (23.3%), Europe (17.7%), and Rest of World (12%) yield an effective global blended multiplier of <strong>1.1352x</strong> vs. pure US baseline. 
+            Bolt6's global operations across Melbourne (47%), US (23.3%), Europe (17.7%), and Rest of World (12%) yield an effective global blended multiplier of <strong>1.1352x</strong> vs. pure US baseline. 
             This translates to a total refined GCP compute spend of <strong>$405,346/yr</strong> (down from $787,750/yr on AWS) — saving <strong>$382,404/yr (-48.5%) on compute alone</strong> while honoring local regional deployments.
         </div>
         """,
