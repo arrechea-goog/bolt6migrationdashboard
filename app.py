@@ -185,13 +185,12 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    st.markdown("### 🎛️ Optimization Levers")
-    use_g4_rtx_mapping = st.checkbox("1. High-Density RTX 6000 Pro Mapping", value=True)
-    enable_mig_partitioning = st.checkbox("2. MIG Slicing (Reclaim Aus Open Headroom)", value=True)
-    enable_gpu_autoscaling = st.checkbox("3. GKE Autopilot Container Autoscaling", value=True)
-
-    st.markdown("---")
     st.caption("All figures in USD ($). Grounded on verified customer telemetry and Google internal pricing models.")
+
+# Optimization Levers (Enabled by Default in Production Architecture)
+use_g4_rtx_mapping = True
+enable_mig_partitioning = True
+enable_gpu_autoscaling = True
 
 # Base Calculations
 scenarios = cc_sheets["Scenario_Comparison"]
