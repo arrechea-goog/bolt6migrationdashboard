@@ -370,6 +370,10 @@ aws_1b_savings_vs_asis = aws_status_quo - aws_1b_optimized  # $278,284
 gcp_prelim_savings_vs_asis = aws_status_quo - gcp_prelim_baseline  # $301,908
 
 # Value Levers & Active Architecture
+gpu_sku_optimization_saving = 148604.0 * (1.1352 if reg_data.get("is_global", False) else region_multiplier)
+aus_open_mig_saving = 110532.0
+gpu_autoscaling_saving = 135000.0
+
 gcp_compute_annual = reg_data["compute_annual"]
 
 if "Native GCS" in storage_arch:
