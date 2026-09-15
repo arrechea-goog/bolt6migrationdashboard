@@ -125,25 +125,32 @@ def load_all_sheets():
     }
 
     cc_df_dict = {
+        # Bolt6's published scenario totals, reproduced exactly from their
+        # Scenario_Comparison / Recommendation tabs. Each row ties to the dollar.
+        # S6 is the only scenario contributed by this model.
         "Scenario_Comparison": pd.DataFrame([
-            {"Scenario ID": "S1", "Scenario Name": "1. AWS As-Is (Status Quo)", "Compute Cost ($)": 787750.00, "Storage Cost ($)": 277000.00, "Cross-Cloud Egress ($)": 126000.00, "Annual Total ($)": 1190750.00},
-            {"Scenario ID": "S2", "Scenario Name": "1B. AWS Structurally Optimized", "Compute Cost ($)": 509466.00, "Storage Cost ($)": 277000.00, "Cross-Cloud Egress ($)": 126000.00, "Annual Total ($)": 912466.00},
-            {"Scenario ID": "S3", "Scenario Name": "2. GCP Baseline (Dual-Cloud S3)", "Compute Cost ($)": 485842.00, "Storage Cost ($)": 277000.00, "Cross-Cloud Egress ($)": 126000.00, "Annual Total ($)": 888842.00},
-            {"Scenario ID": "S4", "Scenario Name": "4. GCP Production (Pure GCS Tiered)", "Compute Cost ($)": 350175.00, "Storage Cost ($)": 140000.00, "Cross-Cloud Egress ($)": 0.00, "Annual Total ($)": 490175.00},
+            {"Scenario ID": "S1", "Scenario Name": "S1 · AWS As-Is (Bolt6 status quo)", "Compute Cost ($)": 912856.00, "Storage Cost ($)": 277894.00, "Cross-Cloud Egress ($)": 0.00, "Annual Total ($)": 1190750.00},
+            {"Scenario ID": "S1B", "Scenario Name": "S1B · AWS Optimized (Bolt6's recommendation)", "Compute Cost ($)": 766869.00, "Storage Cost ($)": 145597.00, "Cross-Cloud Egress ($)": 0.00, "Annual Total ($)": 912466.00},
+            {"Scenario ID": "S3", "Scenario Name": "S3 · GCP Optimized (Bolt6's model, list price)", "Compute Cost ($)": 750788.00, "Storage Cost ($)": 140418.00, "Cross-Cloud Egress ($)": 0.00, "Annual Total ($)": 891206.00},
+            {"Scenario ID": "S4", "Scenario Name": "S4 · Hybrid B2+GCS+GCP (Bolt6's cheapest)", "Compute Cost ($)": 750788.00, "Storage Cost ($)": 136554.00, "Cross-Cloud Egress ($)": 1500.00, "Annual Total ($)": 888842.00},
+            {"Scenario ID": "S6", "Scenario Name": "S6 · GCP Accelerated (RTX PRO 6000 + MIG + DWS)", "Compute Cost ($)": 525927.00, "Storage Cost ($)": 140418.00, "Cross-Cloud Egress ($)": 0.00, "Annual Total ($)": 666345.00},
         ]),
+        # Actual 13 months of Bolt6 compute spend (Compute_Seasonality tab).
+        # Sums to $988,927; annualized x12/13 = $912,856, their headline compute figure.
         "Compute_Seasonality": pd.DataFrame([
-            {"Month": "Jan 2026", "Compute Spend ($)": 439274.00, "Is Event Peak": True},
-            {"Month": "Feb 2026", "Compute Spend ($)": 48200.00, "Is Event Peak": False},
-            {"Month": "Mar 2026", "Compute Spend ($)": 51400.00, "Is Event Peak": False},
-            {"Month": "Apr 2026", "Compute Spend ($)": 49800.00, "Is Event Peak": False},
-            {"Month": "May 2026", "Compute Spend ($)": 53100.00, "Is Event Peak": False},
-            {"Month": "Jun 2026", "Compute Spend ($)": 62400.00, "Is Event Peak": True},
-            {"Month": "Jul 2026", "Compute Spend ($)": 58900.00, "Is Event Peak": True},
-            {"Month": "Aug 2026", "Compute Spend ($)": 50200.00, "Is Event Peak": False},
-            {"Month": "Sep 2026", "Compute Spend ($)": 54600.00, "Is Event Peak": False},
-            {"Month": "Oct 2026", "Compute Spend ($)": 47900.00, "Is Event Peak": False},
-            {"Month": "Nov 2026", "Compute Spend ($)": 52300.00, "Is Event Peak": False},
-            {"Month": "Dec 2026", "Compute Spend ($)": 46800.00, "Is Event Peak": False},
+            {"Month": "2025-05", "Compute Spend ($)": 52519.00, "Is Event Peak": False},
+            {"Month": "2025-06", "Compute Spend ($)": 35299.00, "Is Event Peak": False},
+            {"Month": "2025-07", "Compute Spend ($)": 74071.00, "Is Event Peak": True},
+            {"Month": "2025-08", "Compute Spend ($)": 74462.00, "Is Event Peak": True},
+            {"Month": "2025-09", "Compute Spend ($)": 28069.00, "Is Event Peak": False},
+            {"Month": "2025-10", "Compute Spend ($)": 40511.00, "Is Event Peak": False},
+            {"Month": "2025-11", "Compute Spend ($)": 44676.00, "Is Event Peak": False},
+            {"Month": "2025-12", "Compute Spend ($)": 85236.00, "Is Event Peak": True},
+            {"Month": "2026-01", "Compute Spend ($)": 439274.00, "Is Event Peak": True},
+            {"Month": "2026-02", "Compute Spend ($)": 50902.00, "Is Event Peak": False},
+            {"Month": "2026-03", "Compute Spend ($)": 7249.00, "Is Event Peak": False},
+            {"Month": "2026-04", "Compute Spend ($)": 43770.00, "Is Event Peak": False},
+            {"Month": "2026-05", "Compute Spend ($)": 12888.00, "Is Event Peak": False},
         ]),
     }
 
@@ -172,48 +179,48 @@ REGIONAL_BREAKDOWN = [
         "Tournament Region": 'Australia (Melbourne)',
         "GCP Zone": 'australia-southeast2',
         "AWS Zone": 'ap-southeast-2',
-        "Fleet Share": 0.47,
+        "Fleet Share": 0.48504,
         "Events / Workloads": 'Australian Open (Jan Grand Slam at Melbourne Park), APAC Tournaments',
-        "AWS Compute ($)": 370242.0,
-        "GCP Compute ($)": 158055.0,
-        "Net Compute Savings ($)": 212187.0,
-        "Reduction (%)": 57.3,
-        "Key GCP Levers": 'Eliminates $110.5k reservation fee via MIG court slicing (4 courts / GPU) + in-city Melbourne deployment',
+        "AWS Compute ($)": 237532.0,
+        "GCP Compute ($)": 104046.0,
+        "Net Compute Savings ($)": 133486.0,
+        "Reduction (%)": 56.2,
+        "Key GCP Levers": 'Highest AWS regional premium (+30% on GPU, per Bolt6 Cost Explorer) meets a flat $2.25/hr DWS Flex rate; MIG court slicing at Melbourne Park',
     },
     {
         "Tournament Region": 'United States',
         "GCP Zone": 'us-central1 / us-east4',
         "AWS Zone": 'us-east-1 / us-east-2',
-        "Fleet Share": 0.233,
+        "Fleet Share": 0.24045,
         "Events / Workloads": 'US Tournaments, Core Off-Peak AI/ML Training Pipeline',
-        "AWS Compute ($)": 183546.0,
-        "GCP Compute ($)": 91142.0,
-        "Net Compute Savings ($)": 92404.0,
-        "Reduction (%)": 50.3,
-        "Key GCP Levers": 'RTX 6000 Pro 96GB at $1.0956/hr (-43% vs Ada) + GKE off-hours scale-down',
+        "AWS Compute ($)": 117755.0,
+        "GCP Compute ($)": 59990.0,
+        "Net Compute Savings ($)": 57765.0,
+        "Reduction (%)": 49.1,
+        "Key GCP Levers": 'Lowest-cost GCP region; 3-yr CUD at $1.9794/hr plus GKE off-hours scale-down',
     },
     {
-        "Tournament Region": 'Europe (London & Nordics)',
-        "GCP Zone": 'europe-west2 / europe-north1',
-        "AWS Zone": 'eu-west-2 / eu-north-1',
-        "Fleet Share": 0.177,
+        "Tournament Region": 'Europe (London, NL & Nordics)',
+        "GCP Zone": 'europe-west2 / west4 / north1',
+        "AWS Zone": 'eu-west-2 / eu-central-1 / eu-north-1',
+        "Fleet Share": 0.18266,
         "Events / Workloads": "ATP European Tour, Queen's Club, CEV Volleyball",
-        "AWS Compute ($)": 139432.0,
-        "GCP Compute ($)": 60611.0,
-        "Net Compute Savings ($)": 78821.0,
-        "Reduction (%)": 56.5,
-        "Key GCP Levers": 'DWS Flex uniform $2.25/hr + GKE Autopilot match-window autoscaling (70% idle off)',
+        "AWS Compute ($)": 89454.0,
+        "GCP Compute ($)": 42264.0,
+        "Net Compute Savings ($)": 47190.0,
+        "Reduction (%)": 52.8,
+        "Key GCP Levers": 'DWS Flex uniform $2.25/hr + GKE Autopilot match-window autoscaling; Cloud Run G4 option for burst',
     },
     {
         "Tournament Region": 'Rest of World (APAC/LatAm/ME)',
         "GCP Zone": 'asia-southeast1 / me-central1',
-        "AWS Zone": 'ap-southeast-1 / sa-east-1',
-        "Fleet Share": 0.12,
+        "AWS Zone": 'ap-southeast-1 / sa-east-1 / me-south-1',
+        "Fleet Share": 0.09185,
         "Events / Workloads": 'Challenger Tournaments, Regional Broadcast Feeds',
-        "AWS Compute ($)": 94530.0,
-        "GCP Compute ($)": 40367.0,
-        "Net Compute Savings ($)": 54163.0,
-        "Reduction (%)": 57.3,
+        "AWS Compute ($)": 44979.0,
+        "GCP Compute ($)": 19708.0,
+        "Net Compute Savings ($)": 25271.0,
+        "Reduction (%)": 56.2,
         "Key GCP Levers": 'On-demand ephemeral nodes provisioned dynamically during tournament weeks',
     },
 ]
@@ -222,8 +229,9 @@ REGIONAL_BREAKDOWN = [
 #
 # Fleet attribution fields (fleet_share / aws_hours / aws_cost / gcp_hours / gcp_cost)
 # make every headline number traceable end to end:
-#   aws_cost   = fleet_share x $787,750 AWS annual compute baseline
-#   aws_hours  = aws_cost / aws_a10g_od   (region's AWS g5/A10G on-demand rate)
+#   aws_cost   = fleet_share x $489,720 recurring AWS GPU spend (Bolt6 Cost Explorer,
+#                ex the one-time $110,532 Australian Open reservation event)
+#   aws_hours  = aws_cost / aws_a10g_od   (region's effective blended GPU rate)
 #   gcp_hours  = aws_hours / 4            (RTX 6000 Pro MIG 4:1 court slicing)
 #   gcp_cost   = gcp_hours x the documented production consumption mix below
 #
@@ -233,10 +241,13 @@ REGIONAL_BREAKDOWN = [
 # headline model and the simulator now agree.
 #
 # All GCP rates are g4-standard-48 (1x RTX 6000 Pro + 48 vCPU + 180 GiB) taken
-# from the GCE SKU export. All AWS rates are the public g5.2xlarge (1x A10G)
-# on-demand rate for the matching region. Melbourne carries a uniform +4.00%
-# premium over Sydney on On-Demand/CUD/Spot; DWS Flex is identical in both.
-# Live-fleet rows sum to 100% share, $787,750 AWS and $350,175 GCP.
+# from the GCE SKU export. AWS rates are anchored on Bolt6's own Cost Explorer
+# effective blended rate of $1.3979/GPU-hr, differentiated by the regional
+# premiums recorded in their workbook -- notably the +30% Sydney GPU premium
+# they measured ("APS2 carries a regional premium of approximately 30% on GPU
+# instances", Compute_Pricing tab). Melbourne carries a uniform +4.00% premium
+# over Sydney on GCP On-Demand/CUD/Spot; DWS Flex is identical in both.
+# Live-fleet rows sum to 100% share, $489,720 AWS and $226,007 GCP.
 REGIONAL_CATALOG = {
     "Australia Southeast 2 (Melbourne)": {
         "gcp_region": "australia-southeast2",
@@ -247,14 +258,14 @@ REGIONAL_CATALOG = {
         "gcp_slice_dws": 2.2500,
         "gcp_slice_1y": 4.0365,
         "gcp_slice_3y": 2.5733,
-        "aws_a10g_od": 1.5758,
-        "aws_g6e_ada_od": 2.3120,
+        "aws_a10g_od": 1.5358,
+        "aws_g6e_ada_od": 3.2362,
         "mult": 1.2999,
-        "fleet_share": 0.47,
-        "aws_hours": 234955,
-        "aws_cost": 370242,
-        "gcp_hours": 58739,
-        "gcp_cost": 158055,
+        "fleet_share": 0.48504,
+        "aws_hours": 154668,
+        "aws_cost": 237532,
+        "gcp_hours": 38667,
+        "gcp_cost": 104046,
         "notes": 'Host region for Australian Open in Melbourne (47.0% fleet share, ultra-low in-city latency)',
     },
     "US Central (Iowa / US East Baseline)": {
@@ -266,14 +277,14 @@ REGIONAL_CATALOG = {
         "gcp_slice_dws": 2.2500,
         "gcp_slice_1y": 3.1050,
         "gcp_slice_3y": 1.9794,
-        "aws_a10g_od": 1.2120,
-        "aws_g6e_ada_od": 1.8744,
+        "aws_a10g_od": 1.1813,
+        "aws_g6e_ada_od": 2.4894,
         "mult": 1.0,
-        "fleet_share": 0.233,
-        "aws_hours": 151441,
-        "aws_cost": 183546,
-        "gcp_hours": 37860,
-        "gcp_cost": 91142,
+        "fleet_share": 0.24045,
+        "aws_hours": 99679,
+        "aws_cost": 117755,
+        "gcp_hours": 24920,
+        "gcp_cost": 59990,
         "notes": 'Core US tournament hub & ML training pipeline (23.3% fleet share)',
     },
     "Europe West 2 (London)": {
@@ -285,14 +296,14 @@ REGIONAL_CATALOG = {
         "gcp_slice_dws": 2.2500,
         "gcp_slice_1y": 3.7260,
         "gcp_slice_3y": 2.3753,
-        "aws_a10g_od": 1.5385,
-        "aws_g6e_ada_od": 2.1556,
+        "aws_a10g_od": 1.3727,
+        "aws_g6e_ada_od": 2.8927,
         "mult": 1.2,
-        "fleet_share": 0.141,
-        "aws_hours": 72196,
-        "aws_cost": 111073,
-        "gcp_hours": 18049,
-        "gcp_cost": 46861,
+        "fleet_share": 0.14551,
+        "aws_hours": 51911,
+        "aws_cost": 71260,
+        "gcp_hours": 12978,
+        "gcp_cost": 33694,
         "notes": "Primary host region for ATP Queen's Club & UK Tournaments (14.1% fleet share)",
     },
     "Europe North 1 (Finland)": {
@@ -304,14 +315,14 @@ REGIONAL_CATALOG = {
         "gcp_slice_dws": 2.2500,
         "gcp_slice_1y": 3.4155,
         "gcp_slice_3y": 2.1774,
-        "aws_a10g_od": 1.2900,
-        "aws_g6e_ada_od": 2.0618,
+        "aws_a10g_od": 1.2546,
+        "aws_g6e_ada_od": 2.6437,
         "mult": 1.0999,
-        "fleet_share": 0.036,
-        "aws_hours": 21984,
-        "aws_cost": 28359,
-        "gcp_hours": 5496,
-        "gcp_cost": 13750,
+        "fleet_share": 0.01032,
+        "aws_hours": 4028,
+        "aws_cost": 5054,
+        "gcp_hours": 1007,
+        "gcp_cost": 2520,
         "notes": 'Primary host region for CEV European Volleyball Championship (3.6% fleet share)',
     },
     "Rest of World (Singapore / LatAm / Middle East)": {
@@ -323,14 +334,14 @@ REGIONAL_CATALOG = {
         "gcp_slice_dws": 2.2500,
         "gcp_slice_1y": 3.7260,
         "gcp_slice_3y": 2.3753,
-        "aws_a10g_od": 1.5200,
-        "aws_g6e_ada_od": 2.1500,
+        "aws_a10g_od": 1.4814,
+        "aws_g6e_ada_od": 3.1217,
         "mult": 1.2,
-        "fleet_share": 0.12,
-        "aws_hours": 62191,
-        "aws_cost": 94530,
-        "gcp_hours": 15548,
-        "gcp_cost": 40367,
+        "fleet_share": 0.09185,
+        "aws_hours": 30363,
+        "aws_cost": 44979,
+        "gcp_hours": 7591,
+        "gcp_cost": 19708,
         "notes": 'Challenger tournaments & regional broadcast feeds (12.0% fleet share)',
     },
     "Europe West 4 (Netherlands)": {
@@ -342,14 +353,14 @@ REGIONAL_CATALOG = {
         "gcp_slice_dws": 2.2500,
         "gcp_slice_1y": 3.4155,
         "gcp_slice_3y": 2.1774,
-        "aws_a10g_od": 1.2900,
-        "aws_g6e_ada_od": 2.0618,
+        "aws_a10g_od": 1.3585,
+        "aws_g6e_ada_od": 2.8628,
         "mult": 1.0999,
-        "fleet_share": 0.0,
-        "aws_hours": 0,
-        "aws_cost": 0,
-        "gcp_hours": 0,
-        "gcp_cost": 0,
+        "fleet_share": 0.02683,
+        "aws_hours": 9672,
+        "aws_cost": 13140,
+        "gcp_hours": 2418,
+        "gcp_cost": 6050,
         "notes": 'Reference / Cloud Run EU GPU hub — broadcast interconnect, not yet in the live fleet',
     },
     "Europe West 1 (Belgium)": {
@@ -361,8 +372,8 @@ REGIONAL_CATALOG = {
         "gcp_slice_dws": 2.2500,
         "gcp_slice_1y": 3.4155,
         "gcp_slice_3y": 2.1774,
-        "aws_a10g_od": 1.2900,
-        "aws_g6e_ada_od": 2.0618,
+        "aws_a10g_od": 1.2994,
+        "aws_g6e_ada_od": 2.7383,
         "mult": 1.0999,
         "fleet_share": 0.0,
         "aws_hours": 0,
@@ -376,12 +387,14 @@ REGIONAL_CATALOG = {
 # Fixed 1:1 Global Multi-Region Profile (Exact AWS Geographic Combination)
 region_name = "Global Multi-Region Fleet (Exact 1:1 AWS Footprint)"
 region_code = "Global Multi-Region"
-region_multiplier = 1.1967
-gcp_gpu_hourly = 1.2966  # Global fleet-weighted GPU-only SKU rate
+region_multiplier = 1.1971  # Spend-weighted AWS regional premium vs US baseline
+gcp_gpu_hourly = 1.2965  # Global fleet-weighted GPU-only SKU rate
 gcp_vm12_hourly = 2.0978 # Global fleet-weighted VM rate
-aws_ada_hourly = 2.1404  # Global fleet-weighted AWS g6e.xlarge (1x L40S) rate
-aws_a10g_hourly = 1.4514 # Global fleet-weighted AWS g5.2xlarge (1x A10G) rate
-gcp_compute_annual = 350175.0
+aws_ada_hourly = 2.9800  # Bolt6's actual g6e.4xlarge (1x L40S) effective rate
+aws_a10g_hourly = 1.3979 # Bolt6's actual blended effective GPU rate (Cost Explorer)
+gcp_slice_od_hourly = 5.3250  # Fleet-weighted g4-standard-48 on-demand rate
+# gcp_compute_annual is now DERIVED in the Base Calculations block below, from
+# Bolt6's own Scenario 3/4 build-up with only the GPU line substituted.
 
 # Sidebar: Controls & Architectural Parameters
 with st.sidebar:
@@ -394,13 +407,15 @@ with st.sidebar:
                 🌐 Regional Footprint (1:1 AWS Match)
             </div>
             <div style="font-size: 12px; color: #3c4043; line-height: 1.45;">
-                • <strong>47.0%</strong> Melbourne (<code>australia-southeast2</code>)<br/>
-                • <strong>23.3%</strong> US Central/East (<code>us-central1</code>)<br/>
-                • <strong>17.7%</strong> Europe (<code>europe-west2 / north1</code>)<br/>
-                • <strong>12.0%</strong> Rest of World (<code>asia-southeast1</code>)
+                • <strong>48.5%</strong> Melbourne (<code>australia-southeast2</code>)<br/>
+                • <strong>24.0%</strong> US East/Central (<code>us-central1</code>)<br/>
+                • <strong>18.3%</strong> Europe (<code>europe-west2 / west4 / north1</code>)<br/>
+                • <strong>9.2%</strong> Rest of World (<code>asia-southeast1</code>)
             </div>
             <div style="font-size: 11px; color: #5f6368; margin-top: 6px; border-top: 1px solid #e0e0e0; pt: 4px;">
-                Grounded on Bolt6's actual tournament telemetry (Australian Open in Melbourne).
+                Shares of GPU compute spend, from Bolt6's own <code>Compute_Summary</code>
+                tab (APS2 47.0%, USE2 16.1%, EUW2 14.1%, USE1 7.2%, ...), renormalised
+                over the 96.9% of spend that carries a named region.
             </div>
         </div>
         """,
@@ -409,38 +424,104 @@ with st.sidebar:
 
     storage_arch = st.radio(
         "Storage Strategy",
-        ["Native GCS Tiered (\\$140k/yr, \\$0 Egress)", "Dual-Cloud (S3 Retained + \\$126k Egress)"],
+        ["Native GCS Tiered (\\$140,418/yr, single-provider)", "Hybrid B2 + GCS (Bolt6 S4: \\$136,554 + \\$1,500 egress)"],
         index=0,
     )
 
     st.markdown("---")
     st.caption("All figures in USD ($). Grounded on verified customer telemetry and Google internal pricing models.")
 
-# Base Calculations
-aws_status_quo = 1190750.0  # Scenario S1 ($787,750 compute + $277k storage + $126k egress)
-aws_1b_optimized = 912466.0  # Scenario S2 ($635,466 compute + $277k storage + $0 egress)
-gcp_prelim_baseline = 888842.0  # Scenario S3 ($485,842 compute + $277k storage + $126k egress)
+# ==============================================================================
+# BASE CALCULATIONS
+#
+# Every figure in this block is taken directly from Bolt6's own cost workbook
+# ("AWS vs GCP Migration Assessment"), tabs: Scenario_Comparison, Recommendation,
+# Scenario_1b_AWS_Optimized, Scenario_3_GCP_Optimized, Scenario_4_Hybrid,
+# Compute_Summary and Compute_Pricing.
+#
+# The only line this model changes versus Bolt6's own Scenario 3/4 build-up is
+# GPU compute. Storage, Persistent Disks, Cloud NAT, cross-zone transfer and
+# inter-region transfer are adopted from their workbook unchanged, so the
+# comparison is full-stack on both sides.
+# ==============================================================================
 
-aws_1b_savings_vs_asis = aws_status_quo - aws_1b_optimized  # $278,284
-gcp_prelim_savings_vs_asis = aws_status_quo - gcp_prelim_baseline  # $301,908
+# --- Bolt6's own scenarios (verbatim, Scenario_Comparison tab) ----------------
+aws_status_quo     = 1190750.0  # S1  AWS as-is
+aws_1b_optimized   =  912466.0  # S1B AWS structurally optimized <- BOLT6'S RECOMMENDATION
+gcp_liftshift      = 1029700.0  # S2  GCP lift & shift
+gcp_cust_optimized =  891206.0  # S3  GCP optimized (their model: g2/L4 at list price)
+gcp_cust_hybrid    =  888842.0  # S4  Hybrid B2 + GCS + GCP (their cheapest scenario)
+aws_tie_break      =   50000.0  # their stated rule: gaps under $50k are ties, AWS preferred
 
-# Value Levers & Active Architecture
-gpu_sku_optimization_saving = 148604.0 * 1.1967
-aus_open_mig_saving = 110532.0
-gpu_autoscaling_saving = 135000.0
+aws_1b_savings_vs_asis   = aws_status_quo - aws_1b_optimized    # $278,284
+gcp_cust_savings_vs_asis = aws_status_quo - gcp_cust_hybrid     # $301,908
+cust_gcp_edge_over_1b    = aws_1b_optimized - gcp_cust_hybrid   # $23,624 -> inside tie-break
 
-# gcp_compute_annual is defined above as 350175.0 (65% DWS / 25% CUD / 10% OD across the 1:1 regional blend)
+# --- AWS baseline decomposed (their Compute_Summary tab) ----------------------
+aws_storage_asis        = 277894.0
+aws_compute_asis        = 912856.0
+aws_ec2_instance_hours  = 706468.0   # includes the unused-reservation waste below
+aws_ec2_other           = 206388.0   # EBS + NAT + cross-AZ + egress
+aws_unused_reservations = 110532.0   # ONE-TIME Australian Open event; already expired
+aws_unused_res_hours    =  86954.0
+
+# Recurring GPU position, stripping the one-time AO reservation event.
+# $600,252 billed GPU spend - $110,532 expired reservation = $489,720
+# 437,275 billed GPU hours - 86,954 reservation hours      = 350,321
+aws_gpu_spend_recurring = 489720.0
+aws_gpu_hours_recurring = 350321.0
+aws_gpu_eff_rate        = 1.3979     # $/GPU-hr, Bolt6's Cost Explorer actuals
+aws_cpu_other_instances = 106216.0
+
+# --- Bolt6's own GCP build-up (their Scenario_3 / Scenario_4 tabs) ------------
+cust_gce_instance_hours = 549078.0   # "right-sized, NO discounts" - GCE x 1.0
+cust_gpu_equiv_gcp      = 450869.0   #   of which GPU: g5/g6 -> g2 (L4) at 0.70
+cust_persistent_disks   = 161725.0
+cust_cross_zone         =  30312.0
+cust_cloud_nat          =   9628.0
+cust_inter_region       =     46.0
+cust_gcp_compute        = 750788.0
+cust_waste_carried      =  77372.0   # expired AO reservation pulled into their GCP line
+
+# --- This model's GPU line: RTX PRO 6000 + MIG 4:1 + DWS/CUD mix --------------
+gcp_gpu_compute     = 226007.0   # 87,580 G4-hrs x $2.5806 blended
+gcp_gpu_at_list     = 466356.0   # the same 87,580 G4-hrs at pure on-demand
+gcp_nongpu_gce      =  98209.0   # CPU + untabulated tail, on Bolt6's own mapping
+gcp_g4_hours        =  87580.0
+gcp_blended_g4_rate = 2.5806
+mig_ratio           = 4
+
+gcp_compute_annual = (
+    gcp_gpu_compute + gcp_nongpu_gce + cust_persistent_disks
+    + cust_cross_zone + cust_cloud_nat + cust_inter_region
+)  # $525,927
+
+# --- Value levers (waterfall stages, in order) --------------------------------
+storage_tiering_saving   = aws_storage_asis - 140418.0                # $137,476
+reservation_one_time     = aws_unused_reservations                    # $110,532 ONE-TIME
+mig_hardware_saving      = aws_gpu_spend_recurring - gcp_gpu_at_list  # $23,364 at list price
+commercial_mix_saving    = gcp_gpu_at_list - gcp_gpu_compute          # $240,349 <- the real lever
+infra_rightsizing_saving =  12684.0                                   # CPU + PD/NAT/cross-zone
 
 if "Native GCS" in storage_arch:
-    gcp_storage_annual = 140000.0
+    # Bolt6 Scenario 3 storage: GCS Standard/Nearline/Coldline/Archive + GHCR.
+    gcp_storage_annual = 140418.0
     gcp_egress_annual = 0.0
 else:
-    gcp_storage_annual = 277000.0
-    gcp_egress_annual = 126000.0
+    # Bolt6 Scenario 4 storage: Backblaze B2 hot tier + GCS warm/cold.
+    gcp_storage_annual = 136554.0
+    gcp_egress_annual = 1500.0
 
 gcp_active_annual = gcp_compute_annual + gcp_storage_annual + gcp_egress_annual
 total_net_savings = aws_status_quo - gcp_active_annual
 pct_savings = (total_net_savings / aws_status_quo) * 100.0
+
+# The comparisons that actually answer Bolt6's "stay on AWS" recommendation.
+savings_vs_1b      = aws_1b_optimized - gcp_active_annual
+pct_vs_1b          = (savings_vs_1b / aws_1b_optimized) * 100.0
+savings_vs_cust_gcp = gcp_cust_hybrid - gcp_active_annual
+pct_vs_cust_gcp    = (savings_vs_cust_gcp / gcp_cust_hybrid) * 100.0
+tie_break_multiple = savings_vs_1b / aws_tie_break
 
 # ==============================================================================
 # HEADER & AT-A-GLANCE SCORECARD
@@ -468,27 +549,34 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 3 High-Impact KPI Cards
-col_kpi1, col_kpi2, col_kpi3 = st.columns(3)
+# 4 High-Impact KPI Cards
+col_kpi1, col_kpi2, col_kpi3, col_kpi4 = st.columns(4)
 with col_kpi1:
     st.metric(
-        label="AWS As-Is Annual Spend (Status Quo)",
+        label="S1 · AWS As-Is (Bolt6 status quo)",
         value=f"${aws_status_quo:,.0f} / yr",
-        delta="AWS Baseline Run-Rate",
+        delta="Bolt6's own baseline",
         delta_color="off",
     )
 with col_kpi2:
     st.metric(
-        label="Refined GCP Architecture (Global Multi-Region)",
-        value=f"${gcp_active_annual:,.0f} / yr",
-        delta=f"-${total_net_savings:,.0f} / yr Net Delta",
-        delta_color="normal",
+        label="S1B · AWS Optimized (Bolt6's recommendation)",
+        value=f"${aws_1b_optimized:,.0f} / yr",
+        delta=f"-${aws_1b_savings_vs_asis:,.0f} / yr vs S1",
+        delta_color="off",
     )
 with col_kpi3:
     st.metric(
-        label="Total Annual Cloud Cost Reduction",
-        value=f"${total_net_savings:,.0f} / yr",
-        delta=f"{pct_savings:.1f}% Reduction vs. AWS As-Is",
+        label="S6 · GCP Accelerated (this architecture)",
+        value=f"${gcp_active_annual:,.0f} / yr",
+        delta=f"-${total_net_savings:,.0f} / yr vs S1 ({pct_savings:.1f}%)",
+        delta_color="normal",
+    )
+with col_kpi4:
+    st.metric(
+        label="Advantage over Bolt6's recommended plan",
+        value=f"${savings_vs_1b:,.0f} / yr",
+        delta=f"{tie_break_multiple:.1f}x their $50k tie-break rule",
         delta_color="normal",
     )
 
@@ -497,8 +585,10 @@ col_bar, col_bullets = st.columns([1.5, 1.2])
 
 with col_bar:
     summary_bars = pd.DataFrame([
-        {"Architecture": "AWS As-Is Status Quo", "Annual Spend ($)": aws_status_quo, "Category": "AWS As-Is"},
-        {"Architecture": "GCP Refined Production (Global Multi-Region)", "Annual Spend ($)": gcp_active_annual, "Category": "GCP Refined"},
+        {"Architecture": "S1 · AWS As-Is", "Annual Spend ($)": aws_status_quo, "Category": "AWS As-Is"},
+        {"Architecture": "S1B · AWS Optimized (Bolt6 pick)", "Annual Spend ($)": aws_1b_optimized, "Category": "AWS Optimized"},
+        {"Architecture": "S4 · Bolt6's best GCP option", "Annual Spend ($)": gcp_cust_hybrid, "Category": "Bolt6 GCP"},
+        {"Architecture": "S6 · GCP Accelerated (this model)", "Annual Spend ($)": gcp_active_annual, "Category": "GCP Refined"},
     ])
     if PLOTLY_AVAILABLE:
         fig_scorecard = px.bar(
@@ -510,26 +600,29 @@ with col_bar:
             color="Category",
             color_discrete_map={
                 "AWS As-Is": "#EA4335",
+                "AWS Optimized": "#F28B82",
+                "Bolt6 GCP": "#AECBFA",
                 "GCP Refined": "#34A853"
             },
-            title="Annual Cloud Spend: AWS Status Quo vs. Refined GCP Architecture",
+            title="Annual Cloud Spend: Bolt6's Own Scenarios vs. GCP Accelerated",
         )
-        fig_scorecard.update_layout(showlegend=False, margin=dict(t=35, b=10, l=10, r=10), height=210)
+        fig_scorecard.update_layout(showlegend=False, margin=dict(t=35, b=10, l=10, r=10), height=260)
         fig_scorecard = add_chart_logos(fig_scorecard, show_aws=True, show_gcp=True)
         st.plotly_chart(fig_scorecard, use_container_width=True)
 
 with col_bullets:
     st.markdown(
         f"""
-        <div style="background-color: #f8f9fa; border-left: 4px solid #34a853; padding: 14px 16px; border-radius: 6px; min-height: 210px; display: flex; flex-direction: column; justify-content: center;">
+        <div style="background-color: #f8f9fa; border-left: 4px solid #34a853; padding: 14px 16px; border-radius: 6px; min-height: 260px; display: flex; flex-direction: column; justify-content: center;">
             <div style="font-weight: 700; font-size: 15px; color: #1e8e3e; margin-bottom: 8px;">
-                🎯 Executive Summary & Core Advantages
+                🎯 Executive Summary &amp; Core Advantages
             </div>
             <div style="font-size: 12.5px; color: #3c4043; line-height: 1.45;">
-                • <strong>&#36;{total_net_savings:,.0f}/year savings ({pct_savings:.1f}% cut)</strong> across Bolt6's identical global tournament footprint.<br/>
-                • <strong>1:1 Regional Mapping:</strong> Matches Bolt6's AWS distribution (47% Melbourne / Australian Open, 23% US, 18% Europe, 12% Other) with localized Blackwell RTX 6000 Pro pricing.<br/>
-                • <strong>MIG Court Slicing & Autoscaling:</strong> 1 physical GPU runs 4 courts; nodes scale to zero outside live tournament windows.<br/>
-                • <strong>Serverless G4s on Cloud Run:</strong> The measured 13-day CEV & ATP window costs <strong>&#36;3,209 vs &#36;6,892 on AWS (-53.4%)</strong>, or <strong>&#36;2,342 (-66.0%)</strong> with Flexible CUDs — per-second billing, scale-to-zero, no cluster to run.
+                • <strong>&#36;{total_net_savings:,.0f}/year ({pct_savings:.1f}%) below Bolt6's AWS status quo</strong> — and <strong>&#36;{savings_vs_1b:,.0f}/year ({pct_vs_1b:.1f}%) below Bolt6's own recommended AWS-optimized plan</strong>.<br/>
+                • <strong>Answers the "stay on AWS" conclusion:</strong> Bolt6's assessment rejected migration because its best GCP option beat S1B by only &#36;{cust_gcp_edge_over_1b:,.0f} — inside their own &#36;50k tie-break rule. This architecture clears that rule by <strong>{tie_break_multiple:.1f}x</strong>.<br/>
+                • <strong>Where the saving actually is:</strong> Bolt6 priced both clouds at list. They were right that list-price migration saves almost nothing (&#36;{mig_hardware_saving:,.0f}). DWS Flex + 3-year CUDs are worth <strong>&#36;{commercial_mix_saving:,.0f}/yr</strong> — the lever their model never priced.<br/>
+                • <strong>MIG court slicing:</strong> Bolt6 mapped A10G to L4 one-for-one. One RTX PRO 6000 partitioned 4 ways serves 4 courts, turning {aws_gpu_hours_recurring:,.0f} AWS GPU-hours into {gcp_g4_hours:,.0f} G4-hours.<br/>
+                • <strong>Serverless G4s on Cloud Run:</strong> the measured 13-day CEV &amp; ATP window costs <strong>&#36;3,209 vs &#36;6,892 on AWS (-53.4%)</strong>, or <strong>&#36;2,342 (-66.0%)</strong> with Flexible CUDs — per-second billing, scale-to-zero, no cluster to run.
             </div>
         </div>
         """,
@@ -540,12 +633,17 @@ with col_bullets:
 with st.expander("📊 View Detailed Financial Breakdown & 36-Month Scenario Matrix"):
     col_wf, col_mat = st.columns([1.4, 1.6])
     with col_wf:
+        _c1 = storage_tiering_saving
+        _c2 = _c1 + reservation_one_time
+        _c3 = _c2 + mig_hardware_saving
+        _c4 = _c3 + commercial_mix_saving
         waterfall_rows = [
-            {"Stage": "AWS 1B. Optimized", "Savings ($)": aws_1b_savings_vs_asis, "Type": "AWS 1B Baseline"},
-            {"Stage": "1. Preliminary GCP", "Savings ($)": gcp_prelim_savings_vs_asis, "Type": "Preliminary GCP"},
-            {"Stage": "2. + RTX 6000 Pro", "Savings ($)": gcp_prelim_savings_vs_asis + gpu_sku_optimization_saving, "Type": "GPU Density"},
-            {"Stage": "3. + MIG Slicing", "Savings ($)": gcp_prelim_savings_vs_asis + gpu_sku_optimization_saving + aus_open_mig_saving, "Type": "MIG Slicing"},
-            {"Stage": "4. + GKE Autoscaling", "Savings ($)": total_net_savings, "Type": "Production GCP"},
+            {"Stage": "S1B (Bolt6's plan)", "Savings ($)": aws_1b_savings_vs_asis, "Type": "AWS 1B Baseline"},
+            {"Stage": "1. GCS tiering", "Savings ($)": _c1, "Type": "Storage"},
+            {"Stage": "2. + AO reservation (one-time)", "Savings ($)": _c2, "Type": "One-Time"},
+            {"Stage": "3. + MIG 4:1 at list", "Savings ($)": _c3, "Type": "MIG Slicing"},
+            {"Stage": "4. + DWS Flex / CUD", "Savings ($)": _c4, "Type": "Commercial Model"},
+            {"Stage": "5. + infra right-sizing", "Savings ($)": total_net_savings, "Type": "Production GCP"},
         ]
         wf_df = pd.DataFrame(waterfall_rows)
         if PLOTLY_AVAILABLE:
@@ -555,12 +653,13 @@ with st.expander("📊 View Detailed Financial Breakdown & 36-Month Scenario Mat
                 y="Savings ($)",
                 color="Type",
                 text_auto="$.2s",
-                title="Incremental Annual Savings Progression ($/yr)",
+                title="Cumulative Annual Savings vs S1 AWS As-Is ($/yr)",
                 color_discrete_map={
                     "AWS 1B Baseline": "#EA4335",
-                    "Preliminary GCP": "#4285F4",
-                    "GPU Density": "#FBBC04",
-                    "MIG Slicing": "#F4B400",
+                    "Storage": "#4285F4",
+                    "One-Time": "#9AA0A6",
+                    "MIG Slicing": "#FBBC04",
+                    "Commercial Model": "#1E8E3E",
                     "Production GCP": "#34A853",
                 }
             )
@@ -569,10 +668,11 @@ with st.expander("📊 View Detailed Financial Breakdown & 36-Month Scenario Mat
 
     with col_mat:
         matrix_df = pd.DataFrame([
-            {"Scenario ID": "S1", "Scenario Name": "1. AWS As-Is Baseline (Status Quo)", "Compute Cost ($)": 787750.0, "Storage Cost ($)": 277000.0, "Cross-Cloud Egress ($)": 126000.0, "Annual Total ($)": 1190750.0},
-            {"Scenario ID": "S2", "Scenario Name": "1B. AWS Structurally Optimized", "Compute Cost ($)": 509466.0, "Storage Cost ($)": 277000.0, "Cross-Cloud Egress ($)": 126000.0, "Annual Total ($)": 912466.0},
-            {"Scenario ID": "S3", "Scenario Name": "2. GCP Baseline (Dual-Cloud S3)", "Compute Cost ($)": 485842.0, "Storage Cost ($)": 277000.0, "Cross-Cloud Egress ($)": 126000.0, "Annual Total ($)": 888842.0},
-            {"Scenario ID": "S4", "Scenario Name": "4. GCP Refined Production (Global Multi-Region)", "Compute Cost ($)": gcp_compute_annual, "Storage Cost ($)": gcp_storage_annual, "Cross-Cloud Egress ($)": gcp_egress_annual, "Annual Total ($)": gcp_active_annual},
+            {"Scenario ID": "S1", "Scenario Name": "S1 · AWS As-Is (Bolt6 status quo)", "Compute Cost ($)": 912856.0, "Storage Cost ($)": 277894.0, "Cross-Cloud Egress ($)": 0.0, "Annual Total ($)": 1190750.0},
+            {"Scenario ID": "S1B", "Scenario Name": "S1B · AWS Optimized (Bolt6's recommendation)", "Compute Cost ($)": 766869.0, "Storage Cost ($)": 145597.0, "Cross-Cloud Egress ($)": 0.0, "Annual Total ($)": 912466.0},
+            {"Scenario ID": "S3", "Scenario Name": "S3 · GCP Optimized (Bolt6's model, list price)", "Compute Cost ($)": 750788.0, "Storage Cost ($)": 140418.0, "Cross-Cloud Egress ($)": 0.0, "Annual Total ($)": 891206.0},
+            {"Scenario ID": "S4", "Scenario Name": "S4 · Hybrid B2+GCS+GCP (Bolt6's cheapest)", "Compute Cost ($)": 750788.0, "Storage Cost ($)": 136554.0, "Cross-Cloud Egress ($)": 1500.0, "Annual Total ($)": 888842.0},
+            {"Scenario ID": "S6", "Scenario Name": "S6 · GCP Accelerated (RTX PRO 6000 + MIG + DWS)", "Compute Cost ($)": gcp_compute_annual, "Storage Cost ($)": gcp_storage_annual, "Cross-Cloud Egress ($)": gcp_egress_annual, "Annual Total ($)": gcp_active_annual},
         ])
         matrix_df["36-Mo Total ($)"] = matrix_df["Annual Total ($)"] * 3
         matrix_df["Annual Savings ($)"] = aws_status_quo - matrix_df["Annual Total ($)"]
@@ -591,9 +691,112 @@ with st.expander("📊 View Detailed Financial Breakdown & 36-Month Scenario Mat
             hide_index=True,
         )
         st.caption(
-            "Annual Savings and 36-Mo Net Savings are both measured against the AWS As-Is baseline of "
-            f"\\${aws_status_quo:,.0f}/yr. Row S1 is the baseline itself, so its savings are \\$0 by definition."
+            "Rows S1 through S4 are Bolt6's own scenarios, reproduced exactly from their "
+            "`Scenario_Comparison` tab — each one ties to their published annual total to the dollar. "
+            "S6 is the only row this model contributes, and it changes a single line of Bolt6's own "
+            "Scenario 3/4 build-up: GPU compute. Persistent Disks, Cloud NAT, cross-zone transfer and "
+            "storage are carried across from their workbook unchanged. Savings are measured against "
+            f"S1 (\\${aws_status_quo:,.0f}/yr), so S1's own savings are \\$0 by definition. "
+            f"Note that \\${aws_unused_reservations:,.0f} of the S1 figure is a one-time Australian Open "
+            "capacity-reservation event that has already expired — it is a real 2026 cost, but it is not "
+            "a recurring saving, and it is shown as a separate one-time stage in the waterfall."
         )
+
+with st.expander("🧭 Why Bolt6's own assessment recommended staying on AWS — and what changes", expanded=False):
+    st.markdown(
+        rf"""
+Bolt6's workbook reaches a clear conclusion, and it is worth quoting rather than
+paraphrasing:
+
+> *"With the AWS optimization saving \${aws_1b_savings_vs_asis:,.0f} and migration saving
+> \${gcp_cust_savings_vs_asis:,.0f}, the \${cust_gcp_edge_over_1b//1000:,.0f}K gap is within tie-break range.
+> Recommendation: stay on AWS, optimize in place. Migration to GCP would have to be
+> justified on non-cost grounds."*
+
+**That conclusion is correct given the inputs used.** It is not an arithmetic error,
+and this model does not dispute a single figure in their baseline. The conclusion
+changes because four things were not priced.
+        """
+    )
+
+    st.markdown("##### The four unpriced levers")
+    st.dataframe(
+        pd.DataFrame([
+            {
+                "What Bolt6's model assumed": "List price on both clouds",
+                "Their own words": "\"No discounts assumed on either side: list price comparison only.\"",
+                "Why it matters": "GPU capacity is the one place cloud discounting is transformational. "
+                                  "DWS Flex Start is a flat $2.25/hr for a full RTX PRO 6000 node in every "
+                                  "region in Bolt6's footprint, against a $4.50-$5.85 on-demand rate.",
+                "Annual value": f"${commercial_mix_saving:,.0f}",
+            },
+            {
+                "What Bolt6's model assumed": "g5/A10G maps to g2/L4",
+                "Their own words": "\"g5 -> g2, 0.70. NVIDIA A10G GPU. GCP g2 family with L4 GPU is closest equivalent.\"",
+                "Why it matters": "Reasonable when written, but it maps to a same-class GPU. The G4 family "
+                                  "(RTX PRO 6000 Blackwell, 96 GB GDDR7, 120 TFLOPS FP32) is 3.85x an A10G "
+                                  "and supports 4-way MIG partitioning.",
+                "Annual value": f"${mig_hardware_saving:,.0f} at list, and it is what makes the discount structure reachable",
+            },
+            {
+                "What Bolt6's model assumed": "One workload per GPU, everywhere",
+                "Their own words": "No partitioning appears anywhere in the Compute_Pricing mapping.",
+                "Why it matters": f"Court-level inference does not saturate a Blackwell GPU. MIG 4:1 turns "
+                                  f"{aws_gpu_hours_recurring:,.0f} AWS GPU-hours into {gcp_g4_hours:,.0f} G4-hours "
+                                  f"of billable capacity.",
+                "Annual value": "Enables the two rows above",
+            },
+            {
+                "What Bolt6's model assumed": "GPU spend scaled to GCP including the AO reservation waste",
+                "Their own words": "GCE instance hours derived as AWS spend x ratio, from a table that includes UnusedBox charges.",
+                "Why it matters": "Their Scenario 3 and 4 GCP figures inherit roughly 70% of the "
+                                  f"${aws_unused_reservations:,.0f} expired reservation event, making GCP look "
+                                  "more expensive than it is.",
+                "Annual value": f"${cust_waste_carried:,.0f} overstatement in their GCP scenarios",
+            },
+        ]),
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    st.markdown("##### What that does to the decision")
+    col_a, col_b = st.columns(2)
+    with col_a:
+        st.markdown(
+            f"""
+            <div style="background-color: #fce8e6; border-left: 4px solid #d93025; padding: 12px 16px; border-radius: 6px;">
+                <strong style="color: #d93025;">Bolt6's decision as it stands</strong><br/>
+                <span style="font-size: 12.5px; color: #3c4043;">
+                Best GCP option (S4) beats the recommended AWS plan (S1B) by
+                <strong>&#36;{cust_gcp_edge_over_1b:,.0f}/yr</strong>.<br/>
+                Bolt6's tie-break rule: <em>gaps under &#36;50,000/yr are ties, and AWS wins ties.</em><br/>
+                <strong>Verdict: stay on AWS.</strong>
+                </span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with col_b:
+        st.markdown(
+            f"""
+            <div style="background-color: #e6f4ea; border-left: 4px solid #1e8e3e; padding: 12px 16px; border-radius: 6px;">
+                <strong style="color: #1e8e3e;">With the four levers priced</strong><br/>
+                <span style="font-size: 12.5px; color: #3c4043;">
+                S6 beats the same recommended AWS plan (S1B) by
+                <strong>&#36;{savings_vs_1b:,.0f}/yr</strong>.<br/>
+                That is <strong>{tie_break_multiple:.1f}x</strong> Bolt6's own &#36;50,000 tie-break threshold.<br/>
+                <strong>Verdict: the tie-break rule no longer applies.</strong>
+                </span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.caption(
+        "Presented deliberately on Bolt6's own terms: their baseline, their scenario "
+        "definitions, their non-GPU cost lines, their decision rule. The only substituted "
+        "input is the GPU compute line."
+    )
 
 st.markdown("---")
 
@@ -614,9 +817,15 @@ with tab_exec:
     st.markdown("### 📊 Comprehensive Multi-Cloud Scenario Evaluation")
     st.markdown(
         """
-        In the initial top-down review, GCP demonstrated a preliminary savings advantage over AWS. 
-        However, by activating three modern cloud engineering capabilities (NVIDIA RTX 6000 Pro mapping, MIG hardware slicing, 
-        and GKE Autopilot match-window autoscaling), **total annual savings expand to ~\\$701k/year**.
+        Bolt6's own assessment compared six scenarios and recommended **staying on AWS and optimizing in place**,
+        because its best GCP option came in only **\\$23,624/year** cheaper than an optimized AWS estate — inside
+        Bolt6's own **\\$50,000 tie-break rule**. That conclusion follows correctly from the inputs used, which
+        priced both clouds at list and mapped Bolt6's A10G fleet one-for-one onto L4.
+
+        Scenario **S6** below keeps every one of Bolt6's own cost lines and changes exactly one: GPU compute.
+        Applying DWS Flex, 3-year CUDs and 4-way MIG partitioning on RTX PRO 6000 brings the annual estate to
+        **\\$666,345**, which is **\\$246,121/year below Bolt6's own recommended AWS plan** — roughly five times
+        their tie-break threshold.
         """
     )
 
@@ -625,10 +834,11 @@ with tab_exec:
     with col_e1:
         st.markdown("#### Scenario Cost Comparison Breakdown ($/yr)")
         scenario_bar_data = [
-            {"Scenario": "1. AWS As-Is (Status Quo)", "Annual Spend ($)": 1190750, "Provider": "AWS"},
-            {"Scenario": "1B. AWS Structurally Optimized", "Annual Spend ($)": 912466, "Provider": "AWS"},
-            {"Scenario": "2. GCP Baseline (Dual-Cloud S3)", "Annual Spend ($)": 888842, "Provider": "GCP"},
-            {"Scenario": "4. GCP Production (Pure GCS Tiered)", "Annual Spend ($)": gcp_active_annual, "Provider": "GCP"},
+            {"Scenario": "S1 · AWS As-Is", "Annual Spend ($)": 1190750, "Provider": "AWS"},
+            {"Scenario": "S1B · AWS Optimized (Bolt6 pick)", "Annual Spend ($)": 912466, "Provider": "AWS"},
+            {"Scenario": "S3 · GCP Optimized (Bolt6 model)", "Annual Spend ($)": 891206, "Provider": "GCP (Bolt6)"},
+            {"Scenario": "S4 · Hybrid B2+GCS (Bolt6 best)", "Annual Spend ($)": 888842, "Provider": "GCP (Bolt6)"},
+            {"Scenario": "S6 · GCP Accelerated", "Annual Spend ($)": gcp_active_annual, "Provider": "GCP"},
         ]
         df_sbar = pd.DataFrame(scenario_bar_data)
         if PLOTLY_AVAILABLE:
@@ -638,8 +848,8 @@ with tab_exec:
                 y="Annual Spend ($)",
                 color="Provider",
                 text_auto="$.3s",
-                color_discrete_map={"AWS": "#EA4335", "GCP": "#34A853"},
-                title="Annual Run-Rate across Scenarios (Global Multi-Region)",
+                color_discrete_map={"AWS": "#EA4335", "GCP (Bolt6)": "#AECBFA", "GCP": "#34A853"},
+                title="Annual Run-Rate: Bolt6's Own Scenarios vs. GCP Accelerated",
             )
             fig_sbar.update_layout(margin=dict(t=40, b=20, l=10, r=10), showlegend=False)
             fig_sbar = add_chart_logos(fig_sbar, show_aws=True, show_gcp=True)
@@ -649,13 +859,19 @@ with tab_exec:
         st.markdown("#### Cloud Storage Optimization: Pure GCS vs. AWS S3")
         st.markdown(
             """
-            * **AWS S3 Baseline:** **\\$277,000 / year** + **\\$126,000 / year cross-cloud egress** to stream data outside AWS.
-            * **Google Cloud Storage (GCS) Native:** **\\$140,000 / year** by auto-tiering historical match footage into Nearline/Coldline.
-            * **Zero Egress Penalties:** Consolidating compute and storage on GCP eliminates the \\$126k/yr cross-cloud egress penalty entirely.
+            * **AWS S3 today (Bolt6 S1):** **\\$277,894 / year** across Standard, Glacier IR and Deep Archive.
+            * **AWS S3 after lifecycle tiering (Bolt6 S1B):** **\\$145,597 / year** — most of the storage saving
+              is available *without leaving AWS*, via lifecycle rules and pruning 260 TB of audit-cleanup data.
+            * **Google Cloud Storage native tiering (Bolt6 S3):** **\\$140,418 / year**, single-provider, with
+              no cross-cloud egress between compute and storage.
             """
         )
-        st.success(
-            f"💰 **Net Storage & Egress Advantage:** **+$263,000 / year saved** by eliminating cross-cloud egress and using GCS intelligent tiering."
+        st.info(
+            "📦 **Being straight about storage: it is not the reason to migrate.** Of the "
+            "\\$137,476/yr storage reduction versus today, \\$132,297 is achievable on AWS alone through "
+            "lifecycle tiering — Bolt6 identified this correctly. GCS adds a further **\\$5,179/yr** plus "
+            "the structural benefit of keeping compute and storage with one provider, so there is no "
+            "cross-cloud egress to model. **The migration case rests on GPU compute, not storage.**"
         )
 
     # 1:1 Regional Footprint & Multi-Region Compute Distribution
@@ -663,9 +879,14 @@ with tab_exec:
     st.markdown("### 🌐 1:1 Regional Footprint & Multi-Region Compute Distribution (AWS vs. GCP)")
     st.markdown(
         """
-        Bolt6's AWS As-Is baseline (**\\$1,190,750/year**, with **\\$787,750 compute**) represents tournament operations distributed across **4 key global regions**. 
-        To deliver a 1:1 fair comparison, the **GCP Refined Production model calculates cost across that exact same regional combination**, 
-        applying local regional GPU pricing (`australia-southeast2`, `us-central1`, `europe-west2`, `asia-southeast1`) and specific architectural optimizations in each geography.
+        Bolt6's AWS As-Is baseline (**\\$1,190,750/year**, of which **\\$912,856 is compute**) spans tournament
+        operations in 12 AWS regions. The table below covers the **\\$489,720/year of recurring GPU compute** —
+        the only line this model changes — distributed exactly as Bolt6's own `Compute_Summary` tab records it
+        (Sydney 47.0%, Ohio 16.1%, London 14.1%, N. Virginia 7.2%, and nine smaller regions).
+
+        To keep the comparison 1:1, GCP cost is calculated **in the matching region for every workload**
+        (`australia-southeast2`, `us-central1`, `europe-west2`, `europe-west4`, `europe-north1`, `asia-southeast1`)
+        rather than re-homing the fleet to a cheaper geography.
         """
     )
 
@@ -688,9 +909,14 @@ with tab_exec:
         st.dataframe(regional_display_df, use_container_width=True, hide_index=True)
 
         st.info(
-            "💡 **Australian Open & Melbourne Impact:** Over 47% of Bolt6's annual compute spend is concentrated in Australia for the January Grand Slam. "
-            "On AWS, Bolt6 was forced to route camera feeds to Sydney (`ap-southeast-2`) and paid a \\$110,532 capacity reservation fee. "
-            "On GCP, deploying directly in Melbourne (`australia-southeast2`) provides ultra-low in-city latency to Melbourne Park, while MIG court slicing (4 courts per physical RTX 6000 Pro) combined with GKE dynamic scaling saves **\\$212,187/year (-57.3%)** in Australia alone."
+            "💡 **Australian Open \\& Melbourne Impact:** 47.0% of Bolt6's compute spend lands in Sydney "
+            "(`ap-southeast-2`) for the January Grand Slam, and their Cost Explorer data shows that region "
+            "carries a **~30% premium on GPU instances**. January 2026 alone cost \\$439k, 93% of it in Sydney. "
+            "On GCP, deploying directly in Melbourne (`australia-southeast2`) gives in-city latency to Melbourne "
+            "Park, and MIG court slicing (4 courts per physical RTX PRO 6000) with DWS Flex — a flat \\$2.25/hr "
+            "that carries **no Australian premium at all** — saves **\\$133,486/year (-56.2%)** on Australian GPU "
+            "compute. Separately, the \\$110,532 of unused capacity reservations from that event is real but "
+            "**one-time and already expired**; it is shown as its own stage in the waterfall, not as a recurring saving."
         )
 
     with col_reg_chart:
@@ -752,12 +978,12 @@ with tab_gpu:
         ada_saving_pct = (1.0 - gcp_gpu_hourly / aws_ada_hourly) * 100.0
         four_a10g = 4.0 * aws_a10g_hourly
         hw_table = pd.DataFrame([
-            {"Metric": "GPU Model", "AWS g5.2xlarge (1x A10G)": "NVIDIA A10G", "AWS g6e.xlarge (1x L40S)": "NVIDIA L40S (Ada)", "GCP g4-standard-48 (1x RTX 6000 Pro)": "RTX 6000 Pro (Blackwell)"},
-            {"Metric": "VRAM", "AWS g5.2xlarge (1x A10G)": "24 GB GDDR6", "AWS g6e.xlarge (1x L40S)": "48 GB GDDR6", "GCP g4-standard-48 (1x RTX 6000 Pro)": "96 GB GDDR7 (4x / 2x)"},
-            {"Metric": "FP32 Throughput", "AWS g5.2xlarge (1x A10G)": "31.2 TFLOPS", "AWS g6e.xlarge (1x L40S)": "91.6 TFLOPS", "GCP g4-standard-48 (1x RTX 6000 Pro)": "120.0 TFLOPS (3.85x A10G)"},
-            {"Metric": "Courts served per GPU", "AWS g5.2xlarge (1x A10G)": "1", "AWS g6e.xlarge (1x L40S)": "1", "GCP g4-standard-48 (1x RTX 6000 Pro)": "4 (MIG partitioning)"},
-            {"Metric": "Instance rate", "AWS g5.2xlarge (1x A10G)": f"${aws_a10g_hourly:.4f}/hr", "AWS g6e.xlarge (1x L40S)": f"${aws_ada_hourly:.4f}/hr", "GCP g4-standard-48 (1x RTX 6000 Pro)": "$5.3254/hr OD | $2.2500/hr DWS Flex"},
-            {"Metric": "Cost to serve 4 courts", "AWS g5.2xlarge (1x A10G)": f"4 x ${aws_a10g_hourly:.4f} = ${four_a10g:.4f}/hr", "AWS g6e.xlarge (1x L40S)": f"4 x ${aws_ada_hourly:.4f} = ${4*aws_ada_hourly:.4f}/hr", "GCP g4-standard-48 (1x RTX 6000 Pro)": "1 x $2.2500/hr (-61.2%)"},
+            {"Metric": "GPU Model", "AWS GPU fleet (1x A10G-class)": "NVIDIA A10G", "AWS g6e.xlarge (1x L40S)": "NVIDIA L40S (Ada)", "GCP g4-standard-48 (1x RTX 6000 Pro)": "RTX 6000 Pro (Blackwell)"},
+            {"Metric": "VRAM", "AWS GPU fleet (1x A10G-class)": "24 GB GDDR6", "AWS g6e.xlarge (1x L40S)": "48 GB GDDR6", "GCP g4-standard-48 (1x RTX 6000 Pro)": "96 GB GDDR7 (4x / 2x)"},
+            {"Metric": "FP32 Throughput", "AWS GPU fleet (1x A10G-class)": "31.2 TFLOPS", "AWS g6e.xlarge (1x L40S)": "91.6 TFLOPS", "GCP g4-standard-48 (1x RTX 6000 Pro)": "120.0 TFLOPS (3.85x A10G)"},
+            {"Metric": "Courts served per GPU", "AWS GPU fleet (1x A10G-class)": "1", "AWS g6e.xlarge (1x L40S)": "1", "GCP g4-standard-48 (1x RTX 6000 Pro)": "4 (MIG partitioning)"},
+            {"Metric": "Instance rate", "AWS GPU fleet (1x A10G-class)": f"${aws_a10g_hourly:.4f}/hr", "AWS g6e.xlarge (1x L40S)": f"${aws_ada_hourly:.4f}/hr", "GCP g4-standard-48 (1x RTX 6000 Pro)": "$5.3250/hr OD | $2.2500/hr DWS Flex"},
+            {"Metric": "Cost to serve 4 courts", "AWS GPU fleet (1x A10G-class)": f"4 x ${aws_a10g_hourly:.4f} = ${four_a10g:.4f}/hr", "AWS g6e.xlarge (1x L40S)": f"4 x ${aws_ada_hourly:.4f} = ${4*aws_ada_hourly:.4f}/hr", "GCP g4-standard-48 (1x RTX 6000 Pro)": "1 x $2.2500/hr (-59.8%)"},
         ])
         st.dataframe(hw_table, use_container_width=True, hide_index=True)
         st.caption(
@@ -768,9 +994,10 @@ with tab_gpu:
             "meaningful once one physical GPU is serving four independent workloads."
         )
         st.info(
-            f"💡 **Key Advantage:** Serving four courts costs **\\${four_a10g:.2f}/hr on AWS A10G** "
-            f"versus **\\$2.25/hr on one MIG-partitioned RTX 6000 Pro with DWS Flex — a "
-            f"61.2% reduction**, with 96 GB of GDDR7 and 3.85x the FP32 throughput per GPU."
+            f"💡 **Key Advantage:** Serving four courts costs **\\${four_a10g:.2f}/hr on Bolt6's current "
+            f"AWS GPU fleet** versus **\\$2.25/hr on one MIG-partitioned RTX 6000 Pro with DWS Flex — a "
+            f"{(1 - 2.25/four_a10g)*100:.1f}% reduction**, with 96 GB of GDDR7 and 3.85x the FP32 throughput "
+            f"per GPU. The AWS rate is Bolt6's own Cost Explorer effective blended rate, not a list price."
         )
 
     st.markdown("---")
@@ -780,10 +1007,11 @@ with tab_gpu:
         This is the **single source of truth** for the whole model — regional rates on the left, and the volume and
         annual cost they produce on the right. Every figure is traceable:
 
-        * **Annual AWS GPU-Hrs** = (region's share of the **\\$787,750** AWS compute baseline) ÷ (that region's public `g5.2xlarge` on-demand rate)
-        * **Annual GCP G4-Hrs** = AWS GPU-Hrs ÷ 4 — one RTX 6000 Pro replaces four A10G/T4 GPUs via MIG court slicing
+        * **Annual AWS GPU-Hrs** = (region's share of Bolt6's **\\$489,720** recurring GPU spend) ÷ (that region's effective GPU rate)
+        * **Regional rates** are anchored on Bolt6's own Cost Explorer blended rate of **\\$1.3979/GPU-hr** and differentiated by the regional premiums in their workbook — including the **+30% Sydney GPU premium** they measured
+        * **Annual GCP G4-Hrs** = AWS GPU-Hrs ÷ 4 — one RTX PRO 6000 replaces four A10G/T4/L4 GPUs via MIG court slicing
         * **GCP Annual Cost** = GCP G4-Hrs x the documented mix (**65%** DWS Flex + **25%** 3-Yr CUD + **10%** On-Demand), identical in every region
-        * **Eff. GCP \\$/G4-Hr** is the *outcome* of the production consumption mix (DWS Flex + CUD + On-Demand), not an input
+        * **Eff. GCP \\$/G4-Hr** is the *outcome* of the production consumption mix, not an input
 
         DWS Flex holds a **uniform \\$2.25/hr across every region in Bolt6's footprint** (SKU-verified), which is why the highest-cost regions — Melbourne and London — show the
         largest percentage savings. Melbourne makes the point sharply: `australia-southeast2` is **+4.00% more expensive than Sydney on
@@ -826,11 +1054,11 @@ with tab_gpu:
         "Region": "▶ TOTAL (live fleet)",
         "GCP Region Code": "Global Multi-Region",
         "Fleet Share": f"{t_share*100:.1f}%",
-        "GCP GPU OD ($/h)": "$1.2966",
+        "GCP GPU OD ($/h)": "$1.2965",
         "GCP DWS Flex ($/h)": "$2.25",
-        "GCP 3-Yr CUD ($/h)": "$2.32",
-        "AWS Ada g6e ($/h)": "$2.1404",
-        "GPU Rate Advantage": "-39.4%",
+        "GCP 3-Yr CUD ($/h)": "$2.34",
+        "AWS Ada g6e ($/h)": "$2.9800",
+        "GPU Rate Advantage": "-56.5%",
         "Annual AWS GPU-Hrs": f"{t_aws_h:,}",
         "AWS Annual Cost": f"${t_aws_c:,}",
         "Annual GCP G4-Hrs": f"{t_gcp_h:,}",
@@ -852,8 +1080,9 @@ with tab_gpu:
         """
         <div style="background-color: #e8f0fe; border-left: 4px solid #1a73e8; padding: 12px 16px; border-radius: 6px; margin-top: 10px;">
             <strong style="color: #1a73e8;">🌐 Global Multi-Region Fleet Summary:</strong>
-            Bolt6's global operations across Melbourne (47%), US (23.3%), Europe (17.7%), and Rest of World (12%) yield an effective global blended multiplier of <strong>1.1967x</strong> vs. pure US baseline. 
-            This translates to a total refined GCP compute spend of <strong>&#36;350,175/yr</strong> (down from &#36;787,750/yr on AWS) — saving <strong>&#36;437,575/yr (-55.5%) on compute alone</strong> while honoring local regional deployments.
+            Bolt6's global operations across Melbourne (48.5%), US (24.0%), Europe (18.3%), and Rest of World (9.2%) yield an effective global blended multiplier of <strong>1.1971x</strong> vs. a pure US baseline.
+            This table covers <strong>GPU compute only</strong>: &#36;489,720/yr on AWS today becomes <strong>&#36;226,007/yr</strong> on GCP — a saving of <strong>&#36;263,713/yr (-53.8%)</strong> while honouring every local regional deployment.
+            Bolt6's non-GPU lines (Persistent Disks, Cloud NAT, cross-zone transfer, CPU instances) are carried across from their own Scenario 3/4 build-up unchanged and are included in the headline figure on the Executive Summary tab.
         </div>
         """,
         unsafe_allow_html=True,
