@@ -512,14 +512,15 @@ with col_bar:
 with col_bullets:
     st.markdown(
         f"""
-        <div style="background-color: #f8f9fa; border-left: 4px solid #34a853; padding: 14px 16px; border-radius: 6px; height: 210px; display: flex; flex-direction: column; justify-content: center;">
+        <div style="background-color: #f8f9fa; border-left: 4px solid #34a853; padding: 14px 16px; border-radius: 6px; min-height: 210px; display: flex; flex-direction: column; justify-content: center;">
             <div style="font-weight: 700; font-size: 15px; color: #1e8e3e; margin-bottom: 8px;">
                 🎯 Executive Summary & Core Advantages
             </div>
-            <div style="font-size: 13px; color: #3c4043; line-height: 1.5;">
+            <div style="font-size: 12.5px; color: #3c4043; line-height: 1.45;">
                 • <strong>${total_net_savings:,.0f}/year savings ({pct_savings:.1f}% cut)</strong> across Bolt6's identical global tournament footprint.<br/>
                 • <strong>1:1 Regional Mapping:</strong> Matches Bolt6's AWS distribution (47% Melbourne / Australian Open, 23% US, 18% Europe, 12% Other) with localized Blackwell RTX 6000 Pro pricing.<br/>
-                • <strong>MIG Court Slicing & Autoscaling:</strong> 1 physical GPU runs 4 courts; nodes scale to zero outside live tournament windows.
+                • <strong>MIG Court Slicing & Autoscaling:</strong> 1 physical GPU runs 4 courts; nodes scale to zero outside live tournament windows.<br/>
+                • <strong>Serverless G4s on Cloud Run:</strong> The measured 13-day CEV & ATP window costs <strong>$3,209 vs $6,892 on AWS (-53.4%)</strong>, or <strong>$2,342 (-66.0%)</strong> with Flexible CUDs — per-second billing, scale-to-zero, no cluster to run.
             </div>
         </div>
         """,
