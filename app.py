@@ -176,9 +176,9 @@ REGIONAL_BREAKDOWN = [
         "Fleet Share": 0.470,
         "Events / Workloads": "Australian Open (Jan Grand Slam at Melbourne Park), APAC Tournaments",
         "AWS Compute ($)": 370242.0,
-        "GCP Compute ($)": 206758.0,
-        "Net Compute Savings ($)": 163485.0,
-        "Reduction (%)": 44.2,
+        "GCP Compute ($)": 210627.0,
+        "Net Compute Savings ($)": 159615.0,
+        "Reduction (%)": 43.1,
         "Key GCP Levers": "Eliminates $110.5k reservation fee via MIG court slicing (4 courts / GPU) + in-city Melbourne deployment",
     },
     {
@@ -226,26 +226,28 @@ REGIONAL_BREAKDOWN = [
 #   aws_cost   = fleet_share x $787,750 AWS annual compute baseline
 #   aws_hours  = aws_cost / aws_a10g_od   (region's AWS g5/A10G on-demand rate)
 #   gcp_hours  = aws_hours / 4            (RTX 6000 Pro MIG 4:1 court slicing)
-#   gcp_cost   = region's share of the $405,346 GCP refined production compute
-# Live-fleet rows sum to 100% share, $787,750 AWS and $405,346 GCP.
+#   gcp_cost   = region's share of the $409,215 GCP refined production compute
+# Live-fleet rows sum to 100% share, $787,750 AWS and $409,215 GCP.
+# Melbourne (australia-southeast2) carries a uniform +4.00% premium over Sydney on
+# On-Demand / CUD / Spot; DWS Flex is identical in both (verified against the GCE SKU export).
 REGIONAL_CATALOG = {
     "Australia Southeast 2 (Melbourne)": {
         "gcp_region": "australia-southeast2",
         "aws_region": "ap-southeast-2",
-        "gcp_gpu_od": 1.3696,
-        "gcp_vm12_od": 2.4554,
-        "gcp_slice_od": 5.6249,
-        "gcp_slice_dws": 2.2500,
-        "gcp_slice_1y": 3.8812,
-        "gcp_slice_3y": 2.4743,
+        "gcp_gpu_od": 1.4243,   # australia-southeast2 actual (+4.00% vs Sydney)
+        "gcp_vm12_od": 2.5536,
+        "gcp_slice_od": 5.8499,
+        "gcp_slice_dws": 2.2500,  # DWS Flex is identical to Sydney — no Melbourne premium
+        "gcp_slice_1y": 4.0364,
+        "gcp_slice_3y": 2.5733,
         "aws_a10g_od": 1.7140,
         "aws_g6e_ada_od": 2.3120,
-        "mult": 1.232,
+        "mult": 1.2813,
         "fleet_share": 0.470,
         "aws_hours": 216011,
         "aws_cost": 370242,
         "gcp_hours": 54003,
-        "gcp_cost": 206758,
+        "gcp_cost": 210627,
         "notes": "Host region for Australian Open in Melbourne (47.0% fleet share, ultra-low in-city latency)",
     },
     "US Central (Iowa / US East Baseline)": {
@@ -367,12 +369,12 @@ REGIONAL_CATALOG = {
 # Fixed 1:1 Global Multi-Region Profile (Exact AWS Geographic Combination)
 region_name = "Global Multi-Region Fleet (Exact 1:1 AWS Footprint)"
 region_code = "Global Multi-Region"
-region_multiplier = 1.1352
-gcp_gpu_hourly = 1.2580  # Global fleet-weighted GPU rate
-gcp_vm12_hourly = 2.0530 # Global fleet-weighted VM rate
+region_multiplier = 1.1584
+gcp_gpu_hourly = 1.2830  # Global fleet-weighted GPU rate
+gcp_vm12_hourly = 2.0978 # Global fleet-weighted VM rate
 aws_ada_hourly = 2.1640  # Global fleet-weighted AWS Ada rate
 aws_a10g_hourly = 1.6660 # Global fleet-weighted AWS A10G rate
-gcp_compute_annual = 405346.0
+gcp_compute_annual = 409215.0
 
 # Sidebar: Controls & Architectural Parameters
 with st.sidebar:
@@ -416,11 +418,11 @@ aws_1b_savings_vs_asis = aws_status_quo - aws_1b_optimized  # $278,284
 gcp_prelim_savings_vs_asis = aws_status_quo - gcp_prelim_baseline  # $301,908
 
 # Value Levers & Active Architecture
-gpu_sku_optimization_saving = 148604.0 * 1.1352
+gpu_sku_optimization_saving = 148604.0 * 1.1584
 aus_open_mig_saving = 110532.0
 gpu_autoscaling_saving = 135000.0
 
-# gcp_compute_annual is defined above as 405346.0 (Exact 1:1 Multi-Region Blend)
+# gcp_compute_annual is defined above as 409215.0 (Exact 1:1 Multi-Region Blend)
 
 if "Native GCS" in storage_arch:
     gcp_storage_annual = 140000.0
@@ -681,7 +683,7 @@ with tab_exec:
         st.info(
             "💡 **Australian Open & Melbourne Impact:** Over 47% of Bolt6's annual compute spend is concentrated in Australia for the January Grand Slam. "
             "On AWS, Bolt6 was forced to route camera feeds to Sydney (`ap-southeast-2`) and paid a \\$110,532 capacity reservation fee. "
-            "On GCP, deploying directly in Melbourne (`australia-southeast2`) provides ultra-low in-city latency to Melbourne Park, while MIG court slicing (4 courts per physical RTX 6000 Pro) combined with GKE dynamic scaling saves **\\$163,485/year (-44.2%)** in Australia alone."
+            "On GCP, deploying directly in Melbourne (`australia-southeast2`) provides ultra-low in-city latency to Melbourne Park, while MIG court slicing (4 courts per physical RTX 6000 Pro) combined with GKE dynamic scaling saves **\\$159,615/year (-43.1%)** in Australia alone."
         )
 
     with col_reg_chart:
@@ -762,11 +764,12 @@ with tab_gpu:
 
         * **Annual AWS GPU-Hrs** = (region's share of the **\\$787,750** AWS compute baseline) ÷ (that region's AWS `g5`/A10G on-demand rate)
         * **Annual GCP G4-Hrs** = AWS GPU-Hrs ÷ 4 — one RTX 6000 Pro replaces four A10G/T4 GPUs via MIG court slicing
-        * **GCP Annual Cost** = that region's share of the **\\$405,346** refined production compute run-rate
+        * **GCP Annual Cost** = that region's share of the **\\$409,215** refined production compute run-rate
         * **Eff. GCP \\$/G4-Hr** is the *outcome* of the production consumption mix (DWS Flex + CUD + On-Demand), not an input
 
         DWS Flex holds a **uniform \\$2.25/hr worldwide**, which is why the highest-cost regions — Melbourne and London — show the
-        largest percentage savings.
+        largest percentage savings. Melbourne makes the point sharply: `australia-southeast2` is **+4.00% more expensive than Sydney on
+        On-Demand, CUD and Spot alike**, yet its **DWS Flex rate is identical** — so the premium only touches the un-reserved portion of the fleet.
         """
     )
 
@@ -805,11 +808,11 @@ with tab_gpu:
         "Region": "▶ TOTAL (live fleet)",
         "GCP Region Code": "Global Multi-Region",
         "Fleet Share": f"{t_share*100:.1f}%",
-        "GCP GPU OD ($/h)": "$1.2580",
+        "GCP GPU OD ($/h)": "$1.2830",
         "GCP DWS Flex ($/h)": "$2.25",
         "GCP 3-Yr CUD ($/h)": "$2.25",
         "AWS Ada g6e ($/h)": "$2.1640",
-        "GPU Rate Advantage": "-41.9%",
+        "GPU Rate Advantage": "-40.7%",
         "Annual AWS GPU-Hrs": f"{t_aws_h:,}",
         "AWS Annual Cost": f"${t_aws_c:,}",
         "Annual GCP G4-Hrs": f"{t_gcp_h:,}",
@@ -831,8 +834,8 @@ with tab_gpu:
         """
         <div style="background-color: #e8f0fe; border-left: 4px solid #1a73e8; padding: 12px 16px; border-radius: 6px; margin-top: 10px;">
             <strong style="color: #1a73e8;">🌐 Global Multi-Region Fleet Summary:</strong>
-            Bolt6's global operations across Melbourne (47%), US (23.3%), Europe (17.7%), and Rest of World (12%) yield an effective global blended multiplier of <strong>1.1352x</strong> vs. pure US baseline. 
-            This translates to a total refined GCP compute spend of <strong>&#36;405,346/yr</strong> (down from &#36;787,750/yr on AWS) — saving <strong>&#36;382,404/yr (-48.5%) on compute alone</strong> while honoring local regional deployments.
+            Bolt6's global operations across Melbourne (47%), US (23.3%), Europe (17.7%), and Rest of World (12%) yield an effective global blended multiplier of <strong>1.1584x</strong> vs. pure US baseline. 
+            This translates to a total refined GCP compute spend of <strong>&#36;409,215/yr</strong> (down from &#36;787,750/yr on AWS) — saving <strong>&#36;378,535/yr (-48.1%) on compute alone</strong> while honoring local regional deployments.
         </div>
         """,
         unsafe_allow_html=True,
