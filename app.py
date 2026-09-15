@@ -400,7 +400,7 @@ with st.sidebar:
 
     storage_arch = st.radio(
         "Storage Strategy",
-        ["Native GCS Tiered ($140k/yr, $0 Egress)", "Dual-Cloud (S3 Retained + $126k Egress)"],
+        ["Native GCS Tiered (\\$140k/yr, \\$0 Egress)", "Dual-Cloud (S3 Retained + \\$126k Egress)"],
         index=0,
     )
 
@@ -517,10 +517,10 @@ with col_bullets:
                 🎯 Executive Summary & Core Advantages
             </div>
             <div style="font-size: 12.5px; color: #3c4043; line-height: 1.45;">
-                • <strong>${total_net_savings:,.0f}/year savings ({pct_savings:.1f}% cut)</strong> across Bolt6's identical global tournament footprint.<br/>
+                • <strong>&#36;{total_net_savings:,.0f}/year savings ({pct_savings:.1f}% cut)</strong> across Bolt6's identical global tournament footprint.<br/>
                 • <strong>1:1 Regional Mapping:</strong> Matches Bolt6's AWS distribution (47% Melbourne / Australian Open, 23% US, 18% Europe, 12% Other) with localized Blackwell RTX 6000 Pro pricing.<br/>
                 • <strong>MIG Court Slicing & Autoscaling:</strong> 1 physical GPU runs 4 courts; nodes scale to zero outside live tournament windows.<br/>
-                • <strong>Serverless G4s on Cloud Run:</strong> The measured 13-day CEV & ATP window costs <strong>$3,209 vs $6,892 on AWS (-53.4%)</strong>, or <strong>$2,342 (-66.0%)</strong> with Flexible CUDs — per-second billing, scale-to-zero, no cluster to run.
+                • <strong>Serverless G4s on Cloud Run:</strong> The measured 13-day CEV & ATP window costs <strong>&#36;3,209 vs &#36;6,892 on AWS (-53.4%)</strong>, or <strong>&#36;2,342 (-66.0%)</strong> with Flexible CUDs — per-second billing, scale-to-zero, no cluster to run.
             </div>
         </div>
         """,
@@ -583,7 +583,7 @@ with st.expander("📊 View Detailed Financial Breakdown & 36-Month Scenario Mat
         )
         st.caption(
             "Annual Savings and 36-Mo Net Savings are both measured against the AWS As-Is baseline of "
-            f"${aws_status_quo:,.0f}/yr. Row S1 is the baseline itself, so its savings are $0 by definition."
+            f"\\${aws_status_quo:,.0f}/yr. Row S1 is the baseline itself, so its savings are \\$0 by definition."
         )
 
 st.markdown("---")
@@ -640,9 +640,9 @@ with tab_exec:
         st.markdown("#### Cloud Storage Optimization: Pure GCS vs. AWS S3")
         st.markdown(
             """
-            * **AWS S3 Baseline:** **$277,000 / year** + **$126,000 / year cross-cloud egress** to stream data outside AWS.
-            * **Google Cloud Storage (GCS) Native:** **$140,000 / year** by auto-tiering historical match footage into Nearline/Coldline.
-            * **Zero Egress Penalties:** Consolidating compute and storage on GCP eliminates the $126k/yr cross-cloud egress penalty entirely.
+            * **AWS S3 Baseline:** **\\$277,000 / year** + **\\$126,000 / year cross-cloud egress** to stream data outside AWS.
+            * **Google Cloud Storage (GCS) Native:** **\\$140,000 / year** by auto-tiering historical match footage into Nearline/Coldline.
+            * **Zero Egress Penalties:** Consolidating compute and storage on GCP eliminates the \\$126k/yr cross-cloud egress penalty entirely.
             """
         )
         st.success(
@@ -654,7 +654,7 @@ with tab_exec:
     st.markdown("### 🌐 1:1 Regional Footprint & Multi-Region Compute Distribution (AWS vs. GCP)")
     st.markdown(
         """
-        Bolt6's AWS As-Is baseline (**$1,190,750/year**, with **$787,750 compute**) represents tournament operations distributed across **4 key global regions**. 
+        Bolt6's AWS As-Is baseline (**\\$1,190,750/year**, with **\\$787,750 compute**) represents tournament operations distributed across **4 key global regions**. 
         To deliver a 1:1 fair comparison, the **GCP Refined Production model calculates cost across that exact same regional combination**, 
         applying local regional GPU pricing (`australia-southeast2`, `us-central1`, `europe-west2`, `asia-southeast1`) and specific architectural optimizations in each geography.
         """
@@ -680,8 +680,8 @@ with tab_exec:
 
         st.info(
             "💡 **Australian Open & Melbourne Impact:** Over 47% of Bolt6's annual compute spend is concentrated in Australia for the January Grand Slam. "
-            "On AWS, Bolt6 was forced to route camera feeds to Sydney (`ap-southeast-2`) and paid a $110,532 capacity reservation fee. "
-            "On GCP, deploying directly in Melbourne (`australia-southeast2`) provides ultra-low in-city latency to Melbourne Park, while MIG court slicing (4 courts per physical RTX 6000 Pro) combined with GKE dynamic scaling saves **$163,485/year (-44.2%)** in Australia alone."
+            "On AWS, Bolt6 was forced to route camera feeds to Sydney (`ap-southeast-2`) and paid a \\$110,532 capacity reservation fee. "
+            "On GCP, deploying directly in Melbourne (`australia-southeast2`) provides ultra-low in-city latency to Melbourne Park, while MIG court slicing (4 courts per physical RTX 6000 Pro) combined with GKE dynamic scaling saves **\\$163,485/year (-44.2%)** in Australia alone."
         )
 
     with col_reg_chart:
@@ -760,12 +760,12 @@ with tab_gpu:
         This is the **single source of truth** for the whole model — regional rates on the left, and the volume and
         annual cost they produce on the right. Every figure is traceable:
 
-        * **Annual AWS GPU-Hrs** = (region's share of the **$787,750** AWS compute baseline) ÷ (that region's AWS `g5`/A10G on-demand rate)
+        * **Annual AWS GPU-Hrs** = (region's share of the **\\$787,750** AWS compute baseline) ÷ (that region's AWS `g5`/A10G on-demand rate)
         * **Annual GCP G4-Hrs** = AWS GPU-Hrs ÷ 4 — one RTX 6000 Pro replaces four A10G/T4 GPUs via MIG court slicing
-        * **GCP Annual Cost** = that region's share of the **$405,346** refined production compute run-rate
-        * **Eff. GCP $/G4-Hr** is the *outcome* of the production consumption mix (DWS Flex + CUD + On-Demand), not an input
+        * **GCP Annual Cost** = that region's share of the **\\$405,346** refined production compute run-rate
+        * **Eff. GCP \\$/G4-Hr** is the *outcome* of the production consumption mix (DWS Flex + CUD + On-Demand), not an input
 
-        DWS Flex holds a **uniform $2.25/hr worldwide**, which is why the highest-cost regions — Melbourne and London — show the
+        DWS Flex holds a **uniform \\$2.25/hr worldwide**, which is why the highest-cost regions — Melbourne and London — show the
         largest percentage savings.
         """
     )
@@ -821,7 +821,7 @@ with tab_gpu:
 
     st.dataframe(pd.DataFrame(reg_matrix_rows), use_container_width=True, hide_index=True)
     st.caption(
-        f"Live-fleet rows reconcile exactly: shares sum to {t_share*100:.0f}%, AWS to ${t_aws_c:,} and GCP to ${t_gcp_c:,}. "
+        f"Live-fleet rows reconcile exactly: shares sum to {t_share*100:.0f}%, AWS to \\${t_aws_c:,} and GCP to \\${t_gcp_c:,}. "
         f"{t_aws_h:,} AWS GPU-hours ≈ {t_aws_h/8760:.0f} GPUs running year-round; after 4:1 MIG consolidation that becomes "
         f"{t_gcp_h:,} G4-hours ≈ {t_gcp_h/8760:.0f} concurrent RTX 6000 Pro nodes. "
         "Netherlands and Belgium are reference regions for rate comparison (and the Cloud Run EU GPU hub) — they carry no fleet workload."
@@ -832,7 +832,7 @@ with tab_gpu:
         <div style="background-color: #e8f0fe; border-left: 4px solid #1a73e8; padding: 12px 16px; border-radius: 6px; margin-top: 10px;">
             <strong style="color: #1a73e8;">🌐 Global Multi-Region Fleet Summary:</strong>
             Bolt6's global operations across Melbourne (47%), US (23.3%), Europe (17.7%), and Rest of World (12%) yield an effective global blended multiplier of <strong>1.1352x</strong> vs. pure US baseline. 
-            This translates to a total refined GCP compute spend of <strong>$405,346/yr</strong> (down from $787,750/yr on AWS) — saving <strong>$382,404/yr (-48.5%) on compute alone</strong> while honoring local regional deployments.
+            This translates to a total refined GCP compute spend of <strong>&#36;405,346/yr</strong> (down from &#36;787,750/yr on AWS) — saving <strong>&#36;382,404/yr (-48.5%) on compute alone</strong> while honoring local regional deployments.
         </div>
         """,
         unsafe_allow_html=True,
@@ -865,7 +865,7 @@ with tab_gpu:
             {"Partition": "MIG Slice 4 (24GB VRAM)", "Workload": "Court 4: Automated Line Calling & Broadcast Rendering", "Resource Share": "25% GPU / 24GB"},
         ])
         st.dataframe(mig_diagram_df, use_container_width=True, hide_index=True)
-        st.success("🎯 **Consolidation Impact:** 4 AWS VMs ($6.32/hr total) consolidated into 1 GCP RTX 6000 Pro node with MIG ($1.05/hr OD or $0.56/hr DWS Flex) — **saving up to 82%**.")
+        st.success("🎯 **Consolidation Impact:** 4 AWS VMs (\\$6.32/hr total) consolidated into 1 GCP RTX 6000 Pro node with MIG (\\$1.05/hr OD or \\$0.56/hr DWS Flex) — **saving up to 82%**.")
 
 
 # ==============================================================================
@@ -1043,15 +1043,15 @@ with tab_telemetry:
         ])
         st.dataframe(cr_rates, use_container_width=True, hide_index=True)
         st.caption(
-            "Cloud Run Tier 1 instance-based billing: GPU `nvidia-rtx-pro-6000` $0.00036522/s (no ZR) or $0.00056913/s (ZR); "
-            "CPU $0.000018/vCPU-s; Memory $0.000002/GiB-s. Flexible CUD 3-Yr reduces CPU to $0.00000972 and RAM to $0.00000108. "
+            "Cloud Run Tier 1 instance-based billing: GPU `nvidia-rtx-pro-6000` \\$0.00036522/s (no ZR) or \\$0.00056913/s (ZR); "
+            "CPU \\$0.000018/vCPU-s; Memory \\$0.000002/GiB-s. Flexible CUD 3-Yr reduces CPU to \\$0.00000972 and RAM to \\$0.00000108. "
             "Minimum config for this GPU is 20 vCPU + 80 GiB."
         )
 
     st.success(
-        "💰 **Headline:** Running the European tournaments entirely on Cloud Run costs **$3,208.53 for the 13 days — "
-        "$3,683.88 (-53.4%) less than AWS and 22.1% less than GKE G4 On-Demand**, with zero cluster to manage. "
-        "Applying Compute Flexible CUDs to the CPU/memory component drops it to **$2,341.54 — 18.3% cheaper than even GKE + DWS Flex "
+        "💰 **Headline:** Running the European tournaments entirely on Cloud Run costs **\\$3,208.53 for the 13 days — "
+        "\\$3,683.88 (-53.4%) less than AWS and 22.1% less than GKE G4 On-Demand**, with zero cluster to manage. "
+        "Applying Compute Flexible CUDs to the CPU/memory component drops it to **\\$2,341.54 — 18.3% cheaper than even GKE + DWS Flex "
         "(-66.0% vs AWS)**."
     )
 
@@ -1062,15 +1062,15 @@ with tab_telemetry:
         st.markdown(
             """
             **Economic advantages**
-            * **Per-second billing, scale-to-zero.** Between sessions Bolt6 pays **$0.00**. No node pools idling through
+            * **Per-second billing, scale-to-zero.** Between sessions Bolt6 pays **\\$0.00**. No node pools idling through
               overnight gaps, rain delays or rest days — the measured 70% off-time becomes genuinely free.
             * **No 10-minute scale-down tax.** GKE's cluster autoscaler holds nodes for a grace period after the last pod
               exits; across 244 node cycles that is **40.6 G4-hours of pure waste** removed.
             * **No standing burst buffer.** Bolt6 currently keeps a warm spare GPU for extra-time matches and unplanned
               courts — **187.2 G4-hours over 13 days**. A 5-second cold start makes that spare unnecessary.
             * **Zero cluster overhead.** No control plane, no daemonsets, no node upgrades. This structurally eliminates the
-              **$572 of `c5.xlarge` baseline nodes** (384 nodes / 3,364 hrs) Bolt6 paid just to keep the cluster alive.
-            * **24% cheaper per hour than GCE G4 On-Demand** ($3.187 vs $4.195), with Flexible CUDs taking it below DWS Flex.
+              **\\$572 of `c5.xlarge` baseline nodes** (384 nodes / 3,364 hrs) Bolt6 paid just to keep the cluster alive.
+            * **24% cheaper per hour than GCE G4 On-Demand** (\\$3.187 vs \\$4.195), with Flexible CUDs taking it below DWS Flex.
             """
         )
 
@@ -1086,8 +1086,8 @@ with tab_telemetry:
               partition config, no node pool sizing, no HPA tuning.
             * **Built for the unscheduled.** Extra-time matches, rain-delay restarts and a surprise fifth court need no
               reservation and no pre-booked quota — exactly where DWS Flex reservations are weakest.
-            * **One-flag HA.** Zonal redundancy can be switched on for finals and marquee matches ($3.921/hr) and off for
-              qualifiers ($3.187/hr).
+            * **One-flag HA.** Zonal redundancy can be switched on for finals and marquee matches (\\$3.921/hr) and off for
+              qualifiers (\\$3.187/hr).
             """
         )
 
@@ -1122,9 +1122,9 @@ with tab_commercial:
     st.caption(
         "† Cloud Run rates are **fully loaded** — they include the mandatory instance resources "
         "(20 vCPU + 80 GiB for RTX 6000 Pro; 4 vCPU + 16 GiB for L4), so they are not directly comparable "
-        "to the GPU-only GCE rates above. Shown without zonal redundancy; enabling it takes RTX 6000 Pro to $3.92/hr. "
+        "to the GPU-only GCE rates above. Shown without zonal redundancy; enabling it takes RTX 6000 Pro to \\$3.92/hr. "
         "Applying Compute Flexible CUDs to the CPU/memory component — which span Compute Engine, GKE **and** Cloud Run — "
-        "brings it down to $2.33/hr. Available in `europe-west4`, `us-central1`, `asia-southeast1` and `asia-south2`. "
+        "brings it down to \\$2.33/hr. Available in `europe-west4`, `us-central1`, `asia-southeast1` and `asia-south2`. "
         "See Tab 3 for the full Cloud Run cost model against Bolt6's measured tournament telemetry."
     )
 
@@ -1167,7 +1167,7 @@ with tab_commercial:
     with col_s3:
         st.markdown("##### 3. GPU Pricing Master")
         st.markdown("[🔗 `GCP GPU Pricing & SKUs`](https://docs.google.com/spreadsheets/d/1L-xrU1meHGtGogQFD4OLkSvmutNznDTPQIHSaxda2xI/edit)")
-        st.caption("SKU pricing for G4 RTX 6000 ($4.50 OD / $2.25 DWS / $1.98 CUD) across all regions.")
+        st.caption("SKU pricing for G4 RTX 6000 (\\$4.50 OD / \\$2.25 DWS / \\$1.98 CUD) across all regions.")
 
     col_s4, col_s5, col_s6 = st.columns(3)
     with col_s4:
@@ -1181,7 +1181,7 @@ with tab_commercial:
     with col_s6:
         st.markdown("##### 6. Cloud Comparison Model")
         st.markdown("[🔗 `Bolt6 Cloud Comparison`](https://docs.google.com/spreadsheets/d/1FslH6yEcV0dOaDaNhd_AXDbVrCIDpPw4-ADfW9pQqXA/edit)")
-        st.caption("36-month Scenarios S1–S4 ($1.19M down to $888k), $23.6k preliminary gap, monthly seasonality.")
+        st.caption("36-month Scenarios S1–S4 (\\$1.19M down to \\$888k), \\$23.6k preliminary gap, monthly seasonality.")
 
     # Audit Table in Expander
     with st.expander("🔍 View Cell-Level Telemetry Audit Mapping Table"):
