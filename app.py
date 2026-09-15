@@ -219,7 +219,15 @@ REGIONAL_BREAKDOWN = [
     },
 ]
 
-# Regional Catalog Data Grounded on go/gpus-pricing and AWS Regional Catalogs
+# Regional Catalog Data Grounded on go/gpus-pricing and AWS Regional Catalogs.
+#
+# Fleet attribution fields (fleet_share / aws_hours / aws_cost / gcp_hours / gcp_cost)
+# make every headline number traceable end to end:
+#   aws_cost   = fleet_share x $787,750 AWS annual compute baseline
+#   aws_hours  = aws_cost / aws_a10g_od   (region's AWS g5/A10G on-demand rate)
+#   gcp_hours  = aws_hours / 4            (RTX 6000 Pro MIG 4:1 court slicing)
+#   gcp_cost   = region's share of the $405,346 GCP refined production compute
+# Live-fleet rows sum to 100% share, $787,750 AWS and $405,346 GCP.
 REGIONAL_CATALOG = {
     "Australia Southeast 2 (Melbourne)": {
         "gcp_region": "australia-southeast2",
@@ -233,6 +241,11 @@ REGIONAL_CATALOG = {
         "aws_a10g_od": 1.7140,
         "aws_g6e_ada_od": 2.3120,
         "mult": 1.232,
+        "fleet_share": 0.470,
+        "aws_hours": 216011,
+        "aws_cost": 370242,
+        "gcp_hours": 54003,
+        "gcp_cost": 206758,
         "notes": "Host region for Australian Open in Melbourne (47.0% fleet share, ultra-low in-city latency)",
     },
     "US Central (Iowa / US East Baseline)": {
@@ -247,6 +260,11 @@ REGIONAL_CATALOG = {
         "aws_a10g_od": 1.5800,
         "aws_g6e_ada_od": 1.8744,
         "mult": 1.000,
+        "fleet_share": 0.233,
+        "aws_hours": 116168,
+        "aws_cost": 183546,
+        "gcp_hours": 29042,
+        "gcp_cost": 83197,
         "notes": "Core US tournament hub & ML training pipeline (23.3% fleet share)",
     },
     "Europe West 2 (London)": {
@@ -261,6 +279,11 @@ REGIONAL_CATALOG = {
         "aws_a10g_od": 1.6900,
         "aws_g6e_ada_od": 2.1556,
         "mult": 1.100,
+        "fleet_share": 0.141,
+        "aws_hours": 65724,
+        "aws_cost": 111073,
+        "gcp_hours": 16431,
+        "gcp_cost": 54371,
         "notes": "Primary host region for ATP Queen's Club & UK Tournaments (14.1% fleet share)",
     },
     "Europe North 1 (Finland)": {
@@ -275,7 +298,31 @@ REGIONAL_CATALOG = {
         "aws_a10g_od": 1.5800,
         "aws_g6e_ada_od": 2.0618,
         "mult": 1.060,
+        "fleet_share": 0.036,
+        "aws_hours": 17949,
+        "aws_cost": 28359,
+        "gcp_hours": 4487,
+        "gcp_cost": 13887,
         "notes": "Primary host region for CEV European Volleyball Championship (3.6% fleet share)",
+    },
+    "Rest of World (Singapore / LatAm / Middle East)": {
+        "gcp_region": "asia-southeast1",
+        "aws_region": "ap-southeast-1",
+        "gcp_gpu_od": 1.2500,
+        "gcp_vm12_od": 2.1000,
+        "gcp_slice_od": 4.3500,
+        "gcp_slice_dws": 2.2500,
+        "gcp_slice_1y": 3.5000,
+        "gcp_slice_3y": 2.2500,
+        "aws_a10g_od": 1.6500,
+        "aws_g6e_ada_od": 2.1500,
+        "mult": 1.100,
+        "fleet_share": 0.120,
+        "aws_hours": 57291,
+        "aws_cost": 94530,
+        "gcp_hours": 14323,
+        "gcp_cost": 47133,
+        "notes": "Challenger tournaments & regional broadcast feeds (12.0% fleet share)",
     },
     "Europe West 4 (Netherlands)": {
         "gcp_region": "europe-west4",
@@ -289,7 +336,12 @@ REGIONAL_CATALOG = {
         "aws_a10g_od": 1.5800,
         "aws_g6e_ada_od": 2.0618,
         "mult": 1.050,
-        "notes": "Major European networking & broadcast interconnect hub",
+        "fleet_share": 0.0,
+        "aws_hours": 0,
+        "aws_cost": 0,
+        "gcp_hours": 0,
+        "gcp_cost": 0,
+        "notes": "Reference / Cloud Run EU GPU hub — broadcast interconnect, not yet in the live fleet",
     },
     "Europe West 1 (Belgium)": {
         "gcp_region": "europe-west1",
@@ -303,7 +355,12 @@ REGIONAL_CATALOG = {
         "aws_a10g_od": 1.5800,
         "aws_g6e_ada_od": 2.0618,
         "mult": 1.020,
-        "notes": "Cost-optimized EU central compute tier",
+        "fleet_share": 0.0,
+        "aws_hours": 0,
+        "aws_cost": 0,
+        "gcp_hours": 0,
+        "gcp_cost": 0,
+        "notes": "Reference / cost-optimized EU tier — not in the live fleet",
     },
 }
 
@@ -508,18 +565,24 @@ with st.expander("📊 View Detailed Financial Breakdown & 36-Month Scenario Mat
             {"Scenario ID": "S4", "Scenario Name": "4. GCP Refined Production (Global Multi-Region)", "Compute Cost ($)": gcp_compute_annual, "Storage Cost ($)": gcp_storage_annual, "Cross-Cloud Egress ($)": gcp_egress_annual, "Annual Total ($)": gcp_active_annual},
         ])
         matrix_df["36-Mo Total ($)"] = matrix_df["Annual Total ($)"] * 3
+        matrix_df["Annual Savings ($)"] = aws_status_quo - matrix_df["Annual Total ($)"]
         matrix_df["36-Mo Net Savings ($)"] = (aws_status_quo * 3) - matrix_df["36-Mo Total ($)"]
-        disp_mat = matrix_df[["Scenario Name", "Compute Cost ($)", "Storage Cost ($)", "Cross-Cloud Egress ($)", "Annual Total ($)", "36-Mo Net Savings ($)"]]
+        disp_mat = matrix_df[["Scenario Name", "Compute Cost ($)", "Storage Cost ($)", "Cross-Cloud Egress ($)", "Annual Total ($)", "Annual Savings ($)", "36-Mo Net Savings ($)"]]
         st.dataframe(
             disp_mat.style.format({
                 "Compute Cost ($)": "${:,.0f}",
                 "Storage Cost ($)": "${:,.0f}",
                 "Cross-Cloud Egress ($)": "${:,.0f}",
                 "Annual Total ($)": "${:,.0f}",
+                "Annual Savings ($)": "${:,.0f}",
                 "36-Mo Net Savings ($)": "${:,.0f}",
             }),
             use_container_width=True,
             hide_index=True,
+        )
+        st.caption(
+            "Annual Savings and 36-Mo Net Savings are both measured against the AWS As-Is baseline of "
+            f"${aws_status_quo:,.0f}/yr. Row S1 is the baseline itself, so its savings are $0 by definition."
         )
 
 st.markdown("---")
@@ -690,30 +753,78 @@ with tab_gpu:
         st.info(f"💡 **Key Advantage:** GCP RTX 6000 Pro delivers nearly 4x the compute throughput and double the VRAM (96GB) at a **{ada_saving_pct:.1f}% lower GPU hourly rate** vs. AWS RTX 6000 Ada across the global fleet.")
 
     st.markdown("---")
-    st.markdown("#### 2. Multi-Region Pricing Matrix: RTX 6000 Pro across Europe, US & Australia")
+    st.markdown("#### 2. Multi-Region Pricing Matrix: Rates, Compute Hours & Total Cost by Region")
     st.markdown(
         """
-        GCP pricing varies slightly by region based on local data center power and real estate costs. 
-        However, notice that **DWS Flex maintains a uniform $2.25/hr rate across all global regions**, 
-        providing even larger savings in higher-cost European regions like London (`europe-west2`) and Finland (`europe-north1`).
+        This is the **single source of truth** for the whole model — regional rates on the left, and the volume and
+        annual cost they produce on the right. Every figure is traceable:
+
+        * **Annual AWS GPU-Hrs** = (region's share of the **$787,750** AWS compute baseline) ÷ (that region's AWS `g5`/A10G on-demand rate)
+        * **Annual GCP G4-Hrs** = AWS GPU-Hrs ÷ 4 — one RTX 6000 Pro replaces four A10G/T4 GPUs via MIG court slicing
+        * **GCP Annual Cost** = that region's share of the **$405,346** refined production compute run-rate
+        * **Eff. GCP $/G4-Hr** is the *outcome* of the production consumption mix (DWS Flex + CUD + On-Demand), not an input
+
+        DWS Flex holds a **uniform $2.25/hr worldwide**, which is why the highest-cost regions — Melbourne and London — show the
+        largest percentage savings.
         """
     )
-    
+
     reg_matrix_rows = []
     for r_name, r_vals in REGIONAL_CATALOG.items():
         saving_vs_aws = (1.0 - r_vals["gcp_gpu_od"] / r_vals["aws_g6e_ada_od"]) * 100.0
+        in_fleet = r_vals["fleet_share"] > 0
+        eff_gcp_rate = (r_vals["gcp_cost"] / r_vals["gcp_hours"]) if r_vals["gcp_hours"] else 0.0
+        cost_cut = ((r_vals["aws_cost"] - r_vals["gcp_cost"]) / r_vals["aws_cost"] * 100.0) if r_vals["aws_cost"] else 0.0
         reg_matrix_rows.append({
             "Region": r_name.split("(")[0].strip(),
             "GCP Region Code": r_vals["gcp_region"],
+            "Fleet Share": f"{r_vals['fleet_share']*100:.1f}%" if in_fleet else "reference",
             "GCP GPU OD ($/h)": f"${r_vals['gcp_gpu_od']:.4f}",
-            "GCP g4-std-12 ($/h)": f"${r_vals['gcp_vm12_od']:.4f}",
             "GCP DWS Flex ($/h)": f"${r_vals['gcp_slice_dws']:.2f}",
             "GCP 3-Yr CUD ($/h)": f"${r_vals['gcp_slice_3y']:.2f}",
             "AWS Ada g6e ($/h)": f"${r_vals['aws_g6e_ada_od']:.4f}",
-            "GCP GPU Advantage": f"-{saving_vs_aws:.1f}% vs AWS",
+            "GPU Rate Advantage": f"-{saving_vs_aws:.1f}%",
+            "Annual AWS GPU-Hrs": f"{r_vals['aws_hours']:,}" if in_fleet else "—",
+            "AWS Annual Cost": f"${r_vals['aws_cost']:,}" if in_fleet else "—",
+            "Annual GCP G4-Hrs": f"{r_vals['gcp_hours']:,}" if in_fleet else "—",
+            "GCP Annual Cost": f"${r_vals['gcp_cost']:,}" if in_fleet else "—",
+            "Eff. GCP $/G4-Hr": f"${eff_gcp_rate:.2f}" if in_fleet else "—",
+            "Annual Savings": f"${r_vals['aws_cost'] - r_vals['gcp_cost']:,} (-{cost_cut:.1f}%)" if in_fleet else "—",
             "Event Workload": r_vals["notes"],
         })
+
+    # Totals row across the live fleet only
+    _live = [v for v in REGIONAL_CATALOG.values() if v["fleet_share"] > 0]
+    t_share = sum(v["fleet_share"] for v in _live)
+    t_aws_h = sum(v["aws_hours"] for v in _live)
+    t_aws_c = sum(v["aws_cost"] for v in _live)
+    t_gcp_h = sum(v["gcp_hours"] for v in _live)
+    t_gcp_c = sum(v["gcp_cost"] for v in _live)
+    reg_matrix_rows.append({
+        "Region": "▶ TOTAL (live fleet)",
+        "GCP Region Code": "Global Multi-Region",
+        "Fleet Share": f"{t_share*100:.1f}%",
+        "GCP GPU OD ($/h)": "$1.2580",
+        "GCP DWS Flex ($/h)": "$2.25",
+        "GCP 3-Yr CUD ($/h)": "$2.25",
+        "AWS Ada g6e ($/h)": "$2.1640",
+        "GPU Rate Advantage": "-41.9%",
+        "Annual AWS GPU-Hrs": f"{t_aws_h:,}",
+        "AWS Annual Cost": f"${t_aws_c:,}",
+        "Annual GCP G4-Hrs": f"{t_gcp_h:,}",
+        "GCP Annual Cost": f"${t_gcp_c:,}",
+        "Eff. GCP $/G4-Hr": f"${t_gcp_c/t_gcp_h:.2f}",
+        "Annual Savings": f"${t_aws_c - t_gcp_c:,} (-{(t_aws_c-t_gcp_c)/t_aws_c*100:.1f}%)",
+        "Event Workload": "Exact 1:1 match of Bolt6's AWS geographic footprint",
+    })
+
     st.dataframe(pd.DataFrame(reg_matrix_rows), use_container_width=True, hide_index=True)
+    st.caption(
+        f"Live-fleet rows reconcile exactly: shares sum to {t_share*100:.0f}%, AWS to ${t_aws_c:,} and GCP to ${t_gcp_c:,}. "
+        f"{t_aws_h:,} AWS GPU-hours ≈ {t_aws_h/8760:.0f} GPUs running year-round; after 4:1 MIG consolidation that becomes "
+        f"{t_gcp_h:,} G4-hours ≈ {t_gcp_h/8760:.0f} concurrent RTX 6000 Pro nodes. "
+        "Netherlands and Belgium are reference regions for rate comparison (and the Cloud Run EU GPU hub) — they carry no fleet workload."
+    )
 
     st.markdown(
         """
@@ -1000,12 +1111,21 @@ with tab_commercial:
     st.markdown("#### 1. Google Cloud GPU Commercial Purchasing Options")
     consumption_matrix = [
         {"Model": "On-Demand", "RTX 6000 Pro ($/hr)": "$4.50", "L4 ($/hr)": "$1.00", "Discount": "0% (Baseline)", "Preemption Risk": "None (100% SLA)", "Quota Pool": "Standard On-Demand", "Best Fit for Bolt6": "Unscheduled extra-time matches, sudden tournament surges"},
+        {"Model": "Cloud Run Serverless GPU (per-second)", "RTX 6000 Pro ($/hr)": "$3.19 †", "L4 ($/hr)": "$1.05 †", "Discount": "29.2% OFF", "Preemption Risk": "None (~5s cold start, scale-to-zero)", "Quota Pool": "Serverless milliGPU (no reservation)", "Best Fit for Bolt6": "Overflow & unscheduled demand — rain-delay restarts, a surprise 5th court"},
         {"Model": "Dynamic Workload Scheduler (DWS Flex)", "RTX 6000 Pro ($/hr)": "$2.25", "L4 ($/hr)": "$1.01", "Discount": "50.0% OFF", "Preemption Risk": "ZERO once started", "Quota Pool": "Preemptible (High ceiling)", "Best Fit for Bolt6": "Scheduled tournament matches (TrU Line & Sentinel)"},
         {"Model": "1-Year Committed Use Discount (CUD)", "RTX 6000 Pro ($/hr)": "$3.11", "L4 ($/hr)": "$0.63", "Discount": "30.9% OFF", "Preemption Risk": "None (100% SLA)", "Quota Pool": "Committed Capacity", "Best Fit for Bolt6": "Core baseline year-round tracking camera feeds"},
         {"Model": "3-Year Committed Use Discount (CUD)", "RTX 6000 Pro ($/hr)": "$1.98", "L4 ($/hr)": "$0.45", "Discount": "56.0% OFF", "Preemption Risk": "None (100% SLA)", "Quota Pool": "Committed Capacity", "Best Fit for Bolt6": "Multi-year production commitments for contracted leagues"},
         {"Model": "Spot / Preemptible VMs", "RTX 6000 Pro ($/hr)": "$1.64", "L4 ($/hr)": "$0.60", "Discount": "63.6% OFF", "Preemption Risk": "High (30s eviction)", "Quota Pool": "Preemptible Quota", "Best Fit for Bolt6": "Non-live post-match analytics, AI computer vision re-training"},
     ]
     st.dataframe(pd.DataFrame(consumption_matrix), use_container_width=True, hide_index=True)
+    st.caption(
+        "† Cloud Run rates are **fully loaded** — they include the mandatory instance resources "
+        "(20 vCPU + 80 GiB for RTX 6000 Pro; 4 vCPU + 16 GiB for L4), so they are not directly comparable "
+        "to the GPU-only GCE rates above. Shown without zonal redundancy; enabling it takes RTX 6000 Pro to $3.92/hr. "
+        "Applying Compute Flexible CUDs to the CPU/memory component — which span Compute Engine, GKE **and** Cloud Run — "
+        "brings it down to $2.33/hr. Available in `europe-west4`, `us-central1`, `asia-southeast1` and `asia-south2`. "
+        "See Tab 3 for the full Cloud Run cost model against Bolt6's measured tournament telemetry."
+    )
 
     col_cm1, col_cm2 = st.columns([1.5, 1.3])
     with col_cm1:
